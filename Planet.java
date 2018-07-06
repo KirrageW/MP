@@ -11,13 +11,22 @@ public class Planet {
 		
 		continents = new ArrayList<Continent>();
 		
-		Continent test = new Continent(200,250, 150, 5, PLANETSIZE);
-		Continent test2 = new Continent(200,260, 50, 5, PLANETSIZE);
+		Continent test = new Continent(200,250, 150, 20, PLANETSIZE);
+		Continent test2 = new Continent(200,280, 50, 20, PLANETSIZE);
+		
+		test.setSpeeds(1, 0);
+		test2.setSpeeds(0, 1);
+		
 		continents.add(test);
 		continents.add(test2);
 		
-		test.move();
-		test2.move();
+		
+		try {
+			initiateMovement();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		
@@ -33,6 +42,12 @@ public class Planet {
 	// this class has a list of all continents, so surely it is able to detect collisions
 	// and can directly set new speeds and directions in such events...
 	
+	public void initiateMovement() throws InterruptedException {
+		
+		for (int i = 0; i < continents.size(); i++) {
+			continents.get(i).start();
+		}
+	}
 	
 	
 
