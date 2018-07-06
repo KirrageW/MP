@@ -9,6 +9,9 @@ public class Continent extends Thread {
 	private int height;
 	private int size;
 	private int speedX, speedY;
+	
+	//bounds
+	private int topLeft, topRight, bottomLeft, bottomRightX, bottomRightY;
 
 	public Continent(int x, int y, int height, int size, int planetSize) {
 		this.x = x;
@@ -16,6 +19,7 @@ public class Continent extends Thread {
 		this.height = height;
 		this.size = size;
 		this.planetSize = planetSize;
+		setBounds();
 	}
 
 	public int getXCoord() {
@@ -39,6 +43,16 @@ public class Continent extends Thread {
 		this.speedY = y;
 	}
 
+	public void setBounds() {
+		topLeft = x;
+		topRight = x+size;
+		bottomLeft = y+size;
+		bottomRightX = x+size;
+		bottomRightY = y+size;
+	}
+	
+	
+	
 	public void run()  {
 
 		while (true) {
@@ -66,7 +80,40 @@ public class Continent extends Thread {
 			if (y < 0) {
 				y = planetSize;
 			}
+			
+			setBounds();
+			
 
 		}
 	}
+	
+	public void checkCollision(Continent other) {
+		
+		//if ((this.x >= other.x && this.topRight <= other.topRight) && (this.y >= other.y && this.bottomLeft <= other.bottomLeft)) {
+			
+		if ((this.x >= other.x && this.x <= other.x+size) && (this.y >= other.y && this.y <= this.y+size)) {
+			this.setSpeeds(0,0);
+			
+			other.setSpeeds(0, 0);
+			
+			System.out.println("Collision detected");
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
