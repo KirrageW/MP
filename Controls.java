@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+// will add whatever controls need adding for whatever a user may want to do
 
 public class Controls extends JPanel implements ActionListener {
 	

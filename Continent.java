@@ -42,6 +42,14 @@ public class Continent extends Thread {
 		this.speedX = x;
 		this.speedY = y;
 	}
+	
+	public int getSpeedX() {
+		return speedX;
+	}
+	
+	public int getSpeedY() {
+		return speedY;
+	}
 
 	public void setBounds() {
 		topLeft = x;
@@ -87,17 +95,14 @@ public class Continent extends Thread {
 		}
 	}
 	
-	public void checkCollision(Continent other) {
-		
-		//if ((this.x >= other.x && this.topRight <= other.topRight) && (this.y >= other.y && this.bottomLeft <= other.bottomLeft)) {
+	// detect if one continent is in the bounds of another
+	public boolean checkCollision(Continent other) {	
 			
-		if ((this.x >= other.x && this.x <= other.x+size) && (this.y >= other.y && this.y <= this.y+size)) {
-			this.setSpeeds(0,0);
+		if ((this.x >= other.x && this.x <= other.x+size) && (this.y >= other.y && this.y <= other.y+size)) {
 			
-			other.setSpeeds(0, 0);
-			
-			System.out.println("Collision detected");
+			return true;
 		}
+		return false;
 		
 	}
 	

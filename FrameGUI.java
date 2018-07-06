@@ -2,6 +2,9 @@ import java.awt.*;
 import javax.swing.*;
 
 
+// main frame for View of program - also contains main method. Initialises everything. 
+// Frame holds other components / panels
+
 public class FrameGUI extends JFrame {
 	
 	private Planet planet;
@@ -12,20 +15,24 @@ public class FrameGUI extends JFrame {
 	private JPanel right;
 	
 	FrameGUI(){
+		
+		// make planet
 		Planet test = new Planet();
 		this.planet = test;
 				
+		// frame settings
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Planet rendering");
 		setSize(planet.PLANETSIZE, planet.PLANETSIZE);
 		
+		// add modules
 		animation = new ContinentDrawer(planet);
 		add(animation);
-		
 		controlPanel = new Controls();
-		
 		layoutComponents();
 		setVisible(true);
 		
+		// component redraws in loop here
 		while (true) {
 			animation.repaint();
 			try {

@@ -3,6 +3,10 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 
+// as calculations are kept separate, and this simply draws rectangles where Continent XY locations are, this class is basically
+// finished, and needs no other changes. I think this is good as it keeps the display very separate from the data - replacement classes could 
+// be added in future so long as they use X,Y locations for describing Continents. 
+
 public class ContinentDrawer extends JComponent {
 	
 	private Planet planet;
