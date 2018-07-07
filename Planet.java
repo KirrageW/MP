@@ -7,12 +7,13 @@ public class Planet extends Thread {
 	private ArrayList<Continent> continents;
 	
 	protected final int PLANETSIZE = 500;
+	protected final int SQUARESIZE = 5;
 	
 	public Planet() {
 				
 		continents = new ArrayList<Continent>();	
 		
-		Continent test = new Continent("test", 15, 2,3, PLANETSIZE);
+		Continent test = new Continent("test", 15, 2,3, 50, PLANETSIZE, SQUARESIZE);
 		continents.add(test);
 		
 		for (int i = 0; i < continents.size(); i++) {
