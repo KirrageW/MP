@@ -24,11 +24,20 @@ public class ContinentDrawer extends JComponent {
 		super.paintComponent(g);
 		this.setBackground(sea);
 		
-		//for loop for drawing rects where continent is
+		//for loop for drawing rects where squares are.
 				
 		for (int i = 0; i < planet.getContinents().size(); i++) {
-			g.setColor(new Color(10, 255-planet.getContinents().get(i).getHeight(), 10));
-			g.fillRect(planet.getContinents().get(i).getXCoord(), planet.getContinents().get(i).getYCoord(), planet.getContinents().get(i).getSize(), planet.getContinents().get(i).getSize());
+			
+			for (int j = 0; j < planet.getContinents().get(i).getChildren().size(); j++) {
+				
+				// get each square one by one
+				Square current = planet.getContinents().get(i).getChildren().get(j);
+				
+				g.setColor(new Color(10, 255-current.getHeight(), 10));
+				g.fillRect(current.getXCoord(), current.getYCoord(), current.getSize(), current.getSize());
+			}
+			
+		
 		}
 		
 		

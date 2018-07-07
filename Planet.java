@@ -10,16 +10,10 @@ public class Planet extends Thread {
 	
 	public Planet() {
 				
-		continents = new ArrayList<Continent>();
+		continents = new ArrayList<Continent>();	
 		
-		Continent test = new Continent(200,250, 150, 20, PLANETSIZE);
-		Continent test2 = new Continent(200,280, 50, 20, PLANETSIZE);
-		
-		test.setSpeeds(1, 0);
-		test2.setSpeeds(0, 1);
-		
+		Continent test = new Continent("test", 15, 2,3, PLANETSIZE);
 		continents.add(test);
-		continents.add(test2);
 		
 		for (int i = 0; i < continents.size(); i++) {
 			continents.get(i).start();
@@ -43,11 +37,11 @@ public class Planet extends Thread {
 						
 						
 						
-						int firstX = continents.get(i).getSpeedX();
-						int firstY = continents.get(i).getSpeedY();
+						double firstX = continents.get(i).getSpeedX();
+						double firstY = continents.get(i).getSpeedY();
 						
-						int secX = continents.get(j).getSpeedX();
-						int secY = continents.get(j).getSpeedY();
+						double secX = continents.get(j).getSpeedX();
+						double secY = continents.get(j).getSpeedY();
 						
 						
 						// making them just stop atm
