@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicBorders;
 
 
 // main frame for View of program - also contains main method. Initialises everything. 
@@ -13,6 +14,7 @@ public class FrameGUI extends JFrame {
 	
 	private Controls controlPanel;
 	private JPanel right;
+	
 	
 	FrameGUI(){
 		
@@ -28,6 +30,9 @@ public class FrameGUI extends JFrame {
 		// add modules
 		animation = new ContinentDrawer(planet);
 		add(animation);
+		
+		
+		
 		controlPanel = new Controls();
 		layoutComponents();
 		setVisible(true);
@@ -36,7 +41,7 @@ public class FrameGUI extends JFrame {
 		while (true) {
 			animation.repaint();
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -47,6 +52,9 @@ public class FrameGUI extends JFrame {
 	private void layoutComponents() {
 			
 		right = new JPanel();	
+		
+		
+				
 		right.add(controlPanel);		
 		add(right,BorderLayout.SOUTH);
 				
