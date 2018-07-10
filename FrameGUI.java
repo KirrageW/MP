@@ -4,20 +4,18 @@ import javax.swing.plaf.basic.BasicBorders;
 
 
 // main frame for View of program - also contains main method. Initialises everything. 
-// Frame holds other components / panels
+// Frame holds other components / panels.
+// Currently there is just a button with no useful function other than to test the GUI is responsive.
 
 public class FrameGUI extends JFrame {
 	
 	private Planet planet;
-	
 	private ContinentDrawer animation;
-	
 	private Controls controlPanel;
 	private JPanel right;
 	
 	
-	FrameGUI(){
-		
+	FrameGUI(){		
 		// make planet
 		Planet test = new Planet();
 		this.planet = test;
@@ -49,15 +47,10 @@ public class FrameGUI extends JFrame {
 		}
 	}
 	
-	private void layoutComponents() {
-			
-		right = new JPanel();	
-		
-		
-				
+	private void layoutComponents() {			
+		right = new JPanel();		
 		right.add(controlPanel);		
-		add(right,BorderLayout.SOUTH);
-				
+		add(right,BorderLayout.SOUTH);				
 	}
 	
 	
@@ -71,10 +64,6 @@ public class FrameGUI extends JFrame {
 				FrameGUI testing = new FrameGUI();
 				
 				
-				
-			//}
-			
-		//});
 		
 	}
 

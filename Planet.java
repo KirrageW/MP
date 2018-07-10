@@ -13,8 +13,11 @@ public class Planet extends Thread {
 				
 		continents = new ArrayList<Continent>();	
 		
-		Continent test = new Continent("test", 15, 2,3, 50, PLANETSIZE, SQUARESIZE);
+		Continent test = new Continent("test", 20, 1,0, 50, 50, 50, PLANETSIZE, SQUARESIZE);		
+		Continent test1 = new Continent("test", 20, -1,0, 200, 50, 50, PLANETSIZE, SQUARESIZE);
+		
 		continents.add(test);
+		continents.add(test1);
 		
 		for (int i = 0; i < continents.size(); i++) {
 			continents.get(i).start();
@@ -26,34 +29,21 @@ public class Planet extends Thread {
 	
 	public void run()  {
 		while(true) {
-			for (int i = 0; i < continents.size(); i++) {
-				for (int j = 0; j < continents.size(); j ++) {
-					if (continents.get(i)!=continents.get(j)&&(continents.get(j).checkCollision(continents.get(i)))) {
+			for (Continent continent : continents) {
+				for (int i = 1; i < continents.size(); i ++) {
+					if (continent.checkCollision(continents.get(i))) {
 						
-						// do whatever in the event of a collision
-						// maths...
-						// need to define rules for continents sticking together vs rebounding off eachother
-						
-						// maybe this could be a new class - modules to add different complexities of physics, i.e friction
-						
-						
-						
-						double firstX = continents.get(i).getSpeedX();
-						double firstY = continents.get(i).getSpeedY();
-						
-						double secX = continents.get(j).getSpeedX();
-						double secY = continents.get(j).getSpeedY();
-						
-						
-						// making them just stop atm
+						continent.setSpeeds(0, 0);
 						continents.get(i).setSpeeds(0, 0);
-						continents.get(j).setSpeeds(0, 0);
+					
+						
+						// do whatever in the event of a collision - maths
+						
 					}
 				}
 			}
 			
 		}
-		
 	}
 	
 	

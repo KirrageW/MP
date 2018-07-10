@@ -19,26 +19,37 @@ public class Continent extends Thread {
 	private int centreY;
 
 	// these can all be settings chosen by the user at the start of the program
-	public Continent(String id, int startingArea, int speedX, int speedY, int defaultHeight, int planetSize,
+	public Continent(String id, int startingArea, int speedX, int speedY,int startX, int startY, int defaultHeight, int planetSize,
 			int squareSize) {
 		children = new ArrayList<Square>();
 		this.id = id;
 		this.planetSize = planetSize;
 		this.squareSize = squareSize;
 		this.defaultHeight = defaultHeight;
-		addLand(startingArea);
+		
+		//addLand(startingArea);
+		makeContinent(startingArea, startX, startY);
+		
+		
 		setSpeeds(speedX, speedY);
 
 	}
+	
+	// only makes a large square at the moment, perhaps there could be a way of deleting random squares at the edges to make a natural continent shape?
+	public void makeContinent(int size, int startX, int startY) {
+		for (int i = 0; i < size; i ++) {
+			for (int j = 0; j < size; j++) {
+				children.add(new Square(startX+(i*5), startY+(j*5), this.defaultHeight, this.squareSize, this.planetSize, this.id));
+			}
+		}
+	}
 
-	// make some clever way to randomly generate landmasses - encapsulate all this
-	// crap
-	// some sort of offset from centre???
+	
+	// make some clever way to randomly generate landmasses - some sort of offset from centre???
 	// make a central square, and then build randomly off that one with each square
 	// having an integer that translates to a
 	// coordinated offset for both x and y. that way they can stick to where they
 	// are meant to be.
-
 	public int generateRandomCoords(int CoordSeed) {
 
 		int newX = 0;
@@ -101,6 +112,9 @@ public class Continent extends Thread {
 
 	}
 
+
+	
+	
 	public void setSpeeds(int x, int y) {
 		this.speedX = x;
 		this.speedY = y;
@@ -113,36 +127,8 @@ public class Continent extends Thread {
 	public double getSpeedY() {
 		return speedY;
 	}
-
-	// not sure why i need these - could be useful
-	// gets centreX
-	public int setCentreX() {
-
-		int sumX = 0;
-		for (int i = 0; i < children.size(); i++) {
-			sumX = +children.get(i).getXCoord();
-		}
-		int avX = sumX / children.size();
-		int centreX = 5 * (Math.round(avX / 5));
-
-		this.centreX = centreX;
-		return centreX;
-	}
-
-	// gets centreY
-	public int setCentreY() {
-
-		int sumY = 0;
-		for (int i = 0; i < children.size(); i++) {
-			sumY = +children.get(i).getYCoord();
-		}
-		int avY = sumY / children.size();
-		int centreY = 5 * (Math.round(avY / 5));
-
-		this.centreY = centreY;
-		return centreY;
-	}
-
+	
+	
 	// not working very well - continent breaking apart slightly when moving across edges...
 	public void run() {
 
@@ -184,6 +170,14 @@ public class Continent extends Thread {
 
 	// detect if one continent is in the bounds of another
 	public boolean checkCollision(Continent other) {
+		
+		for (Square child : children) {
+			for (Square otherChild : other.getChildren())
+			
+			if ((child.getXCoord() == otherChild.getXCoord()) && child.getYCoord() == otherChild.getYCoord()) {
+				return true;
+			}
+		}
 
 		
 		return false;
@@ -194,6 +188,37 @@ public class Continent extends Thread {
 		return children;
 
 	}
+	
+
+	// not sure why i need these - could be useful
+	// gets centreX
+	public int setCentreX() {
+
+		int sumX = 0;
+		for (int i = 0; i < children.size(); i++) {
+			sumX = +children.get(i).getXCoord();
+		}
+		int avX = sumX / children.size();
+		int centreX = 5 * (Math.round(avX / 5));
+
+		this.centreX = centreX;
+		return centreX;
+	}
+
+	// gets centreY
+	public int setCentreY() {
+
+		int sumY = 0;
+		for (int i = 0; i < children.size(); i++) {
+			sumY = +children.get(i).getYCoord();
+		}
+		int avY = sumY / children.size();
+		int centreY = 5 * (Math.round(avY / 5));
+
+		this.centreY = centreY;
+		return centreY;
+	}
+
 
 
 }

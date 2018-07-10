@@ -2,6 +2,8 @@
 // a square of continental land, many of which form a Continent
 // essentially an XY coordinate and a height
 
+// the problem is that each Square has no way to know if there is a Square next to it. 
+
 public class Square {
 	
 	private int planetSize;
@@ -43,5 +45,6 @@ public class Square {
 	public void setY(int y) {
 		this.y = y;
 	}
+	
 
 }
