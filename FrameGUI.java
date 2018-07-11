@@ -9,7 +9,7 @@ import javax.swing.plaf.basic.BasicBorders;
 
 public class FrameGUI extends JFrame {
 	
-	private Planet planet;
+/*	private Planet planet;
 	private ContinentDrawer animation;
 	private Controls controlPanel;
 	private JPanel right;
@@ -53,18 +53,7 @@ public class FrameGUI extends JFrame {
 		add(right,BorderLayout.SOUTH);				
 	}
 	
-	
-	
-	// main test here
-	public static void main(String args[]) {
-		//javax.swing.SwingUtilities.invokeLater(new Runnable() {
+	*/
 
-			//@Override
-			//public void run() {
-				FrameGUI testing = new FrameGUI();
-				
-				
-		
-	}
 
 }

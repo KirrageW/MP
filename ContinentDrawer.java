@@ -8,7 +8,7 @@ import javax.swing.JComponent;
 // be added in future so long as they use X,Y locations for describing Continents. 
 
 public class ContinentDrawer extends JComponent {
-	
+/*	
 	private Planet planet;
 	private Color sea;
 	
@@ -42,5 +42,5 @@ public class ContinentDrawer extends JComponent {
 		
 		
 		
-	}
+	}*/
 }

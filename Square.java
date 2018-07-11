@@ -1,50 +1,99 @@
-
-// a square of continental land, many of which form a Continent
-// essentially an XY coordinate and a height
-
-// the problem is that each Square has no way to know if there is a Square next to it. 
-
 public class Square {
 	
-	private int planetSize;
-	
-	private int x;
-	private int y;
+	private double x;
+	private double y;
+	private double xVel;
+	private double yVel;
 	private int height;
-	private int size;
+	private int group;
 	
-	public Square(int x, int y, int height, int size, int planetSize, String continent) {
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private int generation;
+		
+	public Square(int height) {
+		this.height = height;		
+	}
+	
+	public Square(int height, int generation) {
+		this.height = height;	
+		this.generation = generation;
+	}
+	
+	public Square(int x, int y, int height) {
 		this.x = x;
 		this.y = y;
 		this.height = height;
-		this.size = size;
-		this.planetSize = planetSize;
-		
 	}
+	
 
-	public int getXCoord() {
+	// generation (for initial set up)
+	public int getGeneration() {
+		return this.generation;
+	}
+	
+	// COORDINATES
+	public double getX() {
 		return x;
 	}
 
-	public int getYCoord() {
+	public double getY() {
 		return y;
 	}
 
-	public int getHeight() {
-		return height;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	public void setX(int x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 	
-	public void setY(int y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 	
+	// VELOCITIES
+	public void setXVel(double x) {
+		this.xVel = x;
+	}
+	
+	public void setYVel(double y) {
+		this.yVel = y;
+	}
+	
+	public double getXVel() {
+		return xVel;
+	}
+	
+	public double getYVel() {
+		return yVel;
+	}
+	
+	//HEIGHT
+	public int getHeight() {
+		return height;
+	}
+	
+	public void setHeight(int h) {
+		this.height = h;
+	}
+	
+	//GROUP
+	public void setGroup(int g) {
+		this.group = g;
+	}
+	
+	public int getGroup() {
+		return group;
+	}
 
 }

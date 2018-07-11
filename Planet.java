@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Planet extends Thread {
 	
-	private ArrayList<Continent> continents;
+	/*private ArrayList<Continent> continents;
 	
 	protected final int PLANETSIZE = 500;
 	protected final int SQUARESIZE = 5;
@@ -49,7 +49,7 @@ public class Planet extends Thread {
 	
 	public ArrayList<Continent> getContinents(){
 		return continents;
-	}
+	}*/
 	
 
 	
