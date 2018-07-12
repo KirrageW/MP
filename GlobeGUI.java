@@ -19,6 +19,10 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	private JPanel panel2;
 	private JButton advance;
 	
+	
+	private Graphics2D gr;
+	private Graphics2D g2d;
+	
 	private BufferedImage img;
 	
 	
@@ -27,7 +31,10 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		
 		g.makeTestContinent();
 		g.setVelocity(1, 1, 0);
-		g.plotToMap();
+		g.plotToHeightMap();
+		
+		//g.singlePixel();
+		//g.plotToMap();
 		
 		this.size = size;
 		
@@ -38,11 +45,11 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	// makes a whole new frame and verything atm - java garbage should handle it
 	public void redraw() {
 		img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-		Graphics2D gr = (Graphics2D) img.getGraphics();
+		gr = (Graphics2D) img.getGraphics();
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				int c = g.getMap()[i][j];
+				int c = g.getHeightMap()[i][j];
 				if (c < 0) {
 					gr.setColor(new Color(10, 10, 100));
 				} else {
@@ -52,24 +59,8 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			}
 		}
 		
-		panel = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2d = (Graphics2D) g;
-				g2d.clearRect(0, 0, getWidth(), getHeight());
-				// smoothing
-				 //g2d.setRenderingHint(
-				 //RenderingHints.KEY_INTERPOLATION,
-				 //RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-				// Or _BICUBIC
-				g2d.scale(2, 2);
-				g2d.drawImage(img, 0, 0, this);
-			}
-		};
+		panel.repaint();
 		
-		this.getContentPane().add(panel);
-		
-		this.repaint();
 		
 		
 	}
@@ -77,11 +68,11 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	public void layoutComponents() {
 		
 		img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-		Graphics2D gr = (Graphics2D) img.getGraphics();
+		gr = (Graphics2D) img.getGraphics();
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				int c = g.getMap()[i][j];
+				int c = g.getHeightMap()[i][j];
 				if (c < 0) {
 					gr.setColor(new Color(10, 10, 100));
 				} else {
@@ -94,7 +85,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		panel = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
-				Graphics2D g2d = (Graphics2D) g;
+				 g2d = (Graphics2D) g;
 				g2d.clearRect(0, 0, getWidth(), getHeight());
 				// smoothing
 				 //g2d.setRenderingHint(
@@ -109,9 +100,11 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		
 		panel2 = new JPanel();
 		advance = new JButton("Advance time");
+		
 		advance.addActionListener(this);
 		panel2.add(advance);
 		
+	
 		this.add(panel2,BorderLayout.SOUTH);
 		this.getContentPane().add(panel);
 		this.pack();
@@ -128,6 +121,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			System.out.println("Advance!");
 			
 		}
+		
 		
 	}
 	
