@@ -56,6 +56,18 @@ public class Globe {
 			}
 		}
 	}
+	
+	public void makeOtherContinent() {
+		for (int i = size/4+size/4; i < size/3+size/4; i++) {
+			for (int j = size/4; j < size/3; j++) {
+				squares[i][j].setX(i);
+				squares[i][j].setY(j);
+				squares[i][j].setHeight(250);
+				
+				squares[i][j].setGroup(2);
+			}
+		}
+	}
 		
 	// sets velocities of all members of chosen group
 	public void setVelocity(int group, int xVel, int yVel) {
@@ -73,16 +85,22 @@ public class Globe {
 	public void move() {
 		for (int i = 0; i < size; i ++){
 			for (int j = 0; j < size; j ++) {
+				
+				 
+					
 				squares[i][j].setX(squares[i][j].getX()+(squares[i][j].getXVel()));
 				squares[i][j].setY(squares[i][j].getY()+(squares[i][j].getYVel()));				
 			
-				
+				if (groupMap[squares[i][j].getX()][squares[i][j].getY()] > 0) {
+					if (groupMap[squares[i][j].getX()][squares[i][j].getY()] != squares[i][j].getGroup()) {
+						System.out.println("Collision");
+					}
+				}
+						
 				// having to loop over them all. Can't immediately check for -1 height (representing sea level) because I have only given the heightmap the full -1 background.
 				// hang on. 
 				// far too slow
-				
-				
-				
+			
 			}
 		}
 		
@@ -92,6 +110,8 @@ public class Globe {
 		
 		
 		plotToHeightMap();
+		plotToGroupMap();
+		
 	}
 	
 
@@ -111,7 +131,9 @@ public class Globe {
 		for (int i = 0; i < size; i ++) {
 			for (int j = 0; j < size; j ++) {
 				//if (squares[i][j].getX() > 0 && squares[i][j].getY() > 0) {
-					heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight();		
+					heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight();	
+					
+					
 				//}
 			}
 		}	
@@ -121,7 +143,7 @@ public class Globe {
 		
 		for (int i = 0; i < size; i ++) {
 			for (int j = 0; j < size; j ++) {
-				heightMap[i][j]=-1;
+				groupMap[i][j]=-1;
 				
 			}
 		}	
@@ -136,6 +158,7 @@ public class Globe {
 	public void moveOnGroupMap() {
 		
 		// need to efficiently check these collisions...
+		
 		
 		
 	}

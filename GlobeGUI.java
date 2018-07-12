@@ -30,7 +30,9 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		g = new Globe(size);
 		
 		g.makeTestContinent();
+		g.makeOtherContinent();
 		g.setVelocity(1, 1, 0);
+		g.setVelocity(2,-1,0);
 		g.plotToHeightMap();
 		
 		//g.singlePixel();
