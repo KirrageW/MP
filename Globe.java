@@ -15,6 +15,8 @@ public class Globe {
 	private int continentsCounter;
 	
 	
+	private ArrayList<Square> collisions;
+	
 	public Globe(int size) {
 		
 		continents = new ArrayList[10];
@@ -74,7 +76,7 @@ public class Globe {
 			for (int j = size/4; j < size/3; j++) {
 				squares[i][j].setX(i);
 				squares[i][j].setY(j);
-				squares[i][j].setHeight(50);			
+				squares[i][j].setHeight(150);			
 				squares[i][j].setGroup(1);		
 				
 				group1.add(squares[i][j]);
@@ -96,7 +98,7 @@ public class Globe {
 			for (int j = size/4; j < size/3; j++) {
 				squares[i][j].setX(i);
 				squares[i][j].setY(j);
-				squares[i][j].setHeight(250);			
+				squares[i][j].setHeight(150);			
 				squares[i][j].setGroup(2);
 				
 				group2.add(squares[i][j]);
@@ -124,6 +126,14 @@ public class Globe {
 	// and do something with that
 		
 	public void move() {
+		
+		collisions = new ArrayList<Square>(); // reset collisions each time
+		
+		boolean collision = false;
+		
+		int o = 0;
+		int p = 0;
+		
 		for (int i = 0; i < size; i ++){
 			for (int j = 0; j < size; j ++) {
 				
@@ -132,15 +142,37 @@ public class Globe {
 			
 				if (groupMap[squares[i][j].getX()][squares[i][j].getY()] > 0) {
 					if (groupMap[squares[i][j].getX()][squares[i][j].getY()] != squares[i][j].getGroup()) {
+						
+						// save i and j of first instance - to get groups and stuff
+						if (collision == false) {
+							o = i;
+							p = j;
+						}
+						
+						collision = true;
+						
+						// we could amass a list of these squares FIRST, before dealing with the collision as below. 
+						// this means we can changes the heights of all these squares, and their neighbours, and so on. 
+						
+						collisions.add(squares[i][j]);
+						// just make variable for i and j you fucking idiot. carry them over. 
+						
+					}
+				}
+				
+			}
+		}
+						
+						if (collision == true) {
 					
 						// which groups are involved?
-						int g1 = squares[i][j].getGroup();
-						int g2 = groupMap[squares[i][j].getX()][squares[i][j].getY()];
+						int g1 = squares[o][p].getGroup();
+						int g2 = groupMap[squares[o][p].getX()][squares[o][p].getY()];
 						
 						
 						// get the speeds from the first square in these group (they are all the same)
-						// first cont
 						
+						// first cont						
 						int aX = continents[g1].get(0).getXVel();
 						int aY = continents[g1].get(0).getYVel();
 						// second cont
@@ -172,13 +204,13 @@ public class Globe {
 							b.setYVel(-bY);
 						}
 						
-						
+						}
 				
-						
-					}
-				}
-									
-			}
+					
+		
+		for (Square v : collisions) {
+			v.setHeight(250);
+			System.err.println(v.getGroup());
 		}
 			
 		plotToHeightMap();

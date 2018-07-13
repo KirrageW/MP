@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -90,9 +91,9 @@ public class GlobeGUI extends JFrame implements ActionListener{
 				 g2d = (Graphics2D) g;
 				g2d.clearRect(0, 0, getWidth(), getHeight());
 				// smoothing
-				 //g2d.setRenderingHint(
-				 //RenderingHints.KEY_INTERPOLATION,
-				 //RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+				 g2d.setRenderingHint(
+				 RenderingHints.KEY_INTERPOLATION,
+				 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 				// Or _BICUBIC
 				g2d.scale(2, 2);
 				g2d.drawImage(img, 0, 0, this);
