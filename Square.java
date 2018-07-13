@@ -6,21 +6,6 @@ public class Square {
 	private int yVel;
 	private int height;
 	private int group;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	private int generation;
 		
 	public Square(int height) {

@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 
 public class Globe {
 	
@@ -8,13 +8,22 @@ public class Globe {
 	
 	private int[][] groupMap; // this will be a 2d array map that can check for the presence of two Squares in the same place
 	
+	private ArrayList<Square> group1;
+	private ArrayList<Square> group2;
+
+	private ArrayList<Square>[] continents;
+	private int continentsCounter;
 	
 	
 	public Globe(int size) {
 		
+		continents = new ArrayList[10];
+		continentsCounter = 1;
+		
 		this.size=size;
 		
 		squares = new Square[size][size];
+		
 				
 		// all squares -1 (sea) across whole map
 		for (int i = 0; i < size; i++) {
@@ -42,31 +51,60 @@ public class Globe {
 		}
 	}
 	
-	// can make a special list for squares with continent, to loop over for move methods etc. ignores sea squares and would be more efficient.
+	// **********************************************************************************************************
+	// TO DO:
+	
+	// should make a special list for squares with continent, to loop over for move methods etc. ignores sea squares and would be more efficient.
 	// make a continent for testing
+	
+	// NOT USING ALL THOSE SQUARES IN 2D ARRAY - GET RID OF IN FUTURE
+	
+	// MAKE ISLAND GENERATOR - AUTO GROUP TOO
+	
+	// GROUPS NEED SPEED VARIABLES - CONTINENT CLASS AFTER ALL?
+	
+	// **********************************************************************************************************
+	
+	// temp
 	public void makeTestContinent() {
+		
+		group1 = new ArrayList<Square>();
+		
 		for (int i = size/4; i < size/3; i++) {
 			for (int j = size/4; j < size/3; j++) {
-				//squares[i][j] = new Square(i,j,250);
 				squares[i][j].setX(i);
 				squares[i][j].setY(j);
-				squares[i][j].setHeight(250);
+				squares[i][j].setHeight(50);			
+				squares[i][j].setGroup(1);		
 				
-				squares[i][j].setGroup(1);
+				group1.add(squares[i][j]);
+				
+				
 			}
 		}
+		
+		continents[continentsCounter] = group1;
+		continentsCounter++;
 	}
 	
+	// temp
 	public void makeOtherContinent() {
+		
+		group2 = new ArrayList<Square>();
+		
 		for (int i = size/4+size/4; i < size/3+size/4; i++) {
 			for (int j = size/4; j < size/3; j++) {
 				squares[i][j].setX(i);
 				squares[i][j].setY(j);
-				squares[i][j].setHeight(250);
-				
+				squares[i][j].setHeight(250);			
 				squares[i][j].setGroup(2);
+				
+				group2.add(squares[i][j]);
 			}
 		}
+		
+		continents[continentsCounter] = group2;
+		continentsCounter++;
 	}
 		
 	// sets velocities of all members of chosen group
@@ -81,39 +119,75 @@ public class Globe {
 		}
 	}
 	
-	// moves all squares by one iteration of their velocities
+	// moves all squares by one iteration of their velocities. checking for collision
+	// in event of collision, get the groups involved, get their speeds, get their masses, get the angle
+	// and do something with that
+		
 	public void move() {
 		for (int i = 0; i < size; i ++){
 			for (int j = 0; j < size; j ++) {
 				
-				 
-					
 				squares[i][j].setX(squares[i][j].getX()+(squares[i][j].getXVel()));
 				squares[i][j].setY(squares[i][j].getY()+(squares[i][j].getYVel()));				
 			
 				if (groupMap[squares[i][j].getX()][squares[i][j].getY()] > 0) {
 					if (groupMap[squares[i][j].getX()][squares[i][j].getY()] != squares[i][j].getGroup()) {
-						System.out.println("Collision");
+					
+						// which groups are involved?
+						int g1 = squares[i][j].getGroup();
+						int g2 = groupMap[squares[i][j].getX()][squares[i][j].getY()];
+						
+						
+						// get the speeds from the first square in these group (they are all the same)
+						// first cont
+						
+						int aX = continents[g1].get(0).getXVel();
+						int aY = continents[g1].get(0).getYVel();
+						// second cont
+						int bX = continents[g2].get(0).getXVel();
+						int bY = continents[g2].get(0).getYVel();
+						
+						// get mass						
+						int massA = continents[g1].size();
+						int massB = continents[g2].size();
+						
+						// MATHS ***********************************
+						
+						
+						
+						
+						
+						
+						
+						
+						// ******************************************
+						
+						for (Square a : continents[g1]) {
+							a.setXVel(-aX);
+							a.setYVel(-aY);
+						}
+						
+						for (Square b : continents[g2]) {
+							b.setXVel(-bX);
+							b.setYVel(-bY);
+						}
+						
+						
+				
+						
 					}
 				}
-						
-				// having to loop over them all. Can't immediately check for -1 height (representing sea level) because I have only given the heightmap the full -1 background.
-				// hang on. 
-				// far too slow
-			
+									
 			}
 		}
-		
-		
-		
-		
-		
-		
+			
 		plotToHeightMap();
 		plotToGroupMap();
 		
 	}
 	
+	
+
 
 	
 	// run through all the Squares, getting their X and Y coordinates for 2d height array
@@ -147,6 +221,7 @@ public class Globe {
 				
 			}
 		}	
+		
 		for (int i = 0; i < size; i ++) {
 			for (int j = 0; j < size; j ++) {
 				groupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getGroup();
@@ -155,15 +230,9 @@ public class Globe {
 	}
 	
 	// plot new positions on the group map, and loop through to see if any planned positions have continent in them.
-	public void moveOnGroupMap() {
-		
-		// need to efficiently check these collisions...
-		
-		
-		
+	public void moveOnGroupMap() {		
+		// need to efficiently check these collisions...	
 	}
-	
-	
 	
 	public int[][] getHeightMap() {
 		return heightMap;
