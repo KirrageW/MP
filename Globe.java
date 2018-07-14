@@ -199,10 +199,18 @@ public class Globe {
 			int aX = continents[g1].get(0).getXVel();
 			int aY = continents[g1].get(0).getYVel();
 			
-			System.err.println(Math.atan2(aX,aY));
+			double aAngle = Math.atan2(aX,aY);						
+			aAngle = aAngle*(180/Math.PI);
+			System.err.println(aAngle);
+			
+
 			// second cont
 			int bX = continents[g2].get(0).getXVel();
 			int bY = continents[g2].get(0).getYVel();
+			
+			double bAngle = Math.atan2(aX,aY);
+			bAngle = bAngle*(180/Math.PI);
+			System.err.println(bAngle);
 
 			// get mass
 			int massA = continents[g1].size();
@@ -210,21 +218,22 @@ public class Globe {
 
 			// MATHS ***********************************
 
+			// angles, momentum, combination events etc...
 			
-			
+			// relax, i have taken out the changes in direction.
 			
 			
 			
 			// ******************************************
 
 			for (Square a : continents[g1]) {
-				a.setXVel(-aX);
-				a.setYVel(-aY);
+				a.setXVel(aX);
+				a.setYVel(aY);
 			}
 
 			for (Square b : continents[g2]) {
-				b.setXVel(-bX);
-				b.setYVel(-bY);
+				b.setXVel(bX);
+				b.setYVel(bY);
 			}
 
 		}
