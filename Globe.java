@@ -138,18 +138,25 @@ public class Globe {
 		
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-
+				
+				
 				if (squares[i][j].getX() + squares[i][j].getXVel() >= size){
-					squares[i][j].setX(0);					
+					// 0 + amount over limit, for each 
+					int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
+					squares[i][j].setX(amountOver);					
 				}
 				else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
-					squares[i][j].setY(0);
+					int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
+					squares[i][j].setY(amountOver);
 				}
 				else if (squares[i][j].getX() + squares[i][j].getXVel() < 0){
-					squares[i][j].setX(size-1);					
+					// size - amount under limit, for each
+					int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
+					squares[i][j].setX(amountUnder);					
 				}
 				else if (squares[i][j].getY() + squares[i][j].getYVel() < 0){
-					squares[i][j].setY(size-1);					
+					int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
+					squares[i][j].setY(amountUnder);					
 				}
 				
 			}
