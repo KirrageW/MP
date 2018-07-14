@@ -112,9 +112,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
-	}
-	
-	
+	}	
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -123,13 +121,9 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			redraw();
 			System.out.println("Advance!");
 			
-		}
-		
-		
+		}		
 	}
-	
-	
-	
+		
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

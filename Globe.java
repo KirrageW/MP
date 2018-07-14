@@ -74,7 +74,7 @@ public class Globe {
 		group1 = new ArrayList<Square>();
 
 		for (int i = size / 4; i < size / 3; i++) {
-			for (int j = size / 4; j < size / 3; j++) {
+			for (int j = size / 4; j < size / 2; j++) {
 				squares[i][j].setX(i);
 				squares[i][j].setY(j);
 				squares[i][j].setHeight(150);
@@ -135,6 +135,25 @@ public class Globe {
 
 		int o = 0;
 		int p = 0;
+		
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+
+				if (squares[i][j].getX() + squares[i][j].getXVel() >= size){
+					squares[i][j].setX(0);					
+				}
+				else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
+					squares[i][j].setY(0);
+				}
+				else if (squares[i][j].getX() + squares[i][j].getXVel() < 0){
+					squares[i][j].setX(size-1);					
+				}
+				else if (squares[i][j].getY() + squares[i][j].getYVel() < 0){
+					squares[i][j].setY(size-1);					
+				}
+				
+			}
+		}
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -179,6 +198,8 @@ public class Globe {
 			// first cont
 			int aX = continents[g1].get(0).getXVel();
 			int aY = continents[g1].get(0).getYVel();
+			
+			System.err.println(Math.atan2(aX,aY));
 			// second cont
 			int bX = continents[g2].get(0).getXVel();
 			int bY = continents[g2].get(0).getYVel();
@@ -189,6 +210,11 @@ public class Globe {
 
 			// MATHS ***********************************
 
+			
+			
+			
+			
+			
 			// ******************************************
 
 			for (Square a : continents[g1]) {
@@ -204,17 +230,24 @@ public class Globe {
 		}
 
 		// get those that overlapped
+		int force = 250;
 		for (Square v : collisions) {
-			v.setHeight(250);
+			getNeighbours(v, force);
+			
+			
 			System.err.println(v.getGroup());
 		}
+		
+		for (Square v : collisions) {
+			v.setHeight(force);
+		}
 
-		// move here
+		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 
-				squares[i][j].setX(squares[i][j].getX() + (squares[i][j].getXVel()));
-				squares[i][j].setY(squares[i][j].getY() + (squares[i][j].getYVel()));
+			squares[i][j].setX(squares[i][j].getX() + (squares[i][j].getXVel()));
+			squares[i][j].setY(squares[i][j].getY() + (squares[i][j].getYVel()));
 			}
 		}
 
@@ -223,7 +256,35 @@ public class Globe {
 
 	}
 
-	
+	// upper bound for forloop here could be related to the force involved - so a large collision will iterate more times, reaching more neighbours
+	// also should take in force to determine scale of mountain formation
+	public void getNeighbours(Square x, int force) {
+		
+		// get group of square involved
+		int g = x.getGroup();
+		
+		for (Square a : continents[g]) {
+			if ((a.getX() == x.getX()+1 || a.getX() == x.getX()-1 || a.getX() == x.getX()) && (a.getY() == x.getY()+1 || a.getY() == x.getY() -1 || a.getY() == x.getY())) {
+				if (a.getX() == x.getX() && a.getY() == x.getY()) {
+					a.setHeight(force);
+					
+				}
+				else {
+					a.setHeight(force/2);
+					// getNeighbours(a, force/2);
+				}
+			}
+		}
+		
+		
+		
+		for (int i = 0; i < force; i ++) {
+			
+			
+		}
+		
+		
+	}
 	
 	
 	// run through all the Squares, getting their X and Y coordinates for 2d height
