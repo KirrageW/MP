@@ -30,11 +30,13 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	public GlobeGUI(int size) {		
 		g = new Globe(size);
 		
-		g.makeTestContinent();
-		g.makeOtherContinent();
-		g.setVelocity(1, 1, 0);
-		g.setVelocity(2,-1,0);
-		g.plotToHeightMap();
+		//g.makeTestContinent();
+		//g.makeOtherContinent();
+		//g.setVelocity(1, 5, 2);
+		//g.setVelocity(2,1,4);
+		//g.plotToHeightMap();
+		
+		g.generate(4);
 		
 		//g.singlePixel();
 		//g.plotToMap();
@@ -127,7 +129,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		GlobeGUI main = new GlobeGUI(250);
+		GlobeGUI main = new GlobeGUI(20);
 		
 		
 	}

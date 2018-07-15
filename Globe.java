@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Globe {
 
@@ -48,7 +49,7 @@ public class Globe {
 		groupMap = new int[size][size];
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				groupMap[i][j] = -1;
+				groupMap[i][j] = 0;
 			}
 		}
 	}
@@ -56,15 +57,24 @@ public class Globe {
 	// **********************************************************************************************************
 	// TO DO:
 
-	// should make a special list for squares with continent, to loop over for move
-	// methods etc. ignores sea squares and would be more efficient.
-	// make a continent for testing
+	// MAKE ISLAND GENERATOR - AUTO GROUP TOO - use the 2d int array, generate
+	// random 1s, then group to make islands. internet search for it.
 
-	// NOT USING ALL THOSE SQUARES IN 2D ARRAY - GET RID OF IN FUTURE
+	// better collisions
 
-	// MAKE ISLAND GENERATOR - AUTO GROUP TOO
+	// better mountain generation
 
-	// GROUPS NEED SPEED VARIABLES - CONTINENT CLASS AFTER ALL?
+	// rotating continents?
+
+	// sort out boundary index thing
+
+	// refactor all of it - squares and stuff
+
+	// add GUI stuff
+
+	// add erosion
+
+	// add ice
 
 	// **********************************************************************************************************
 
@@ -84,11 +94,65 @@ public class Globe {
 
 			}
 		}
-
 		continents[continentsCounter] = group1;
 		continentsCounter++;
 	}
 
+	
+	
+	
+	
+	
+	// start to make an int array map to define islands
+	// can sys.out it to view it easily. 
+	
+	// generate random numbers , 1s, 2s, 3s depedning on number of initial continents you want
+	// sea is -1 
+	
+	// then do things with finding neighbours and such
+	
+	public void generate(int x) {
+		Random r= new Random();
+		for (int i = 0; i < size*2; i ++) {
+			
+				int e = r.nextInt(size);
+				int f = r.nextInt(size);
+				
+				groupMap[e][f] = 1;
+			
+		}
+		
+		for (int i = 0; i < size; i ++) {
+			System.out.println("");
+		
+			for (int j = 0; j < size; j ++) {
+				System.out.print(groupMap[i][j]);
+			}
+		}
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// temp
 	public void makeOtherContinent() {
 
@@ -121,12 +185,6 @@ public class Globe {
 		}
 	}
 
-	// moves all squares by one iteration of their velocities. checking for
-	// collision
-	// in event of collision, get the groups involved, get their speeds, get their
-	// masses, get the angle
-	// and do something with that
-
 	public void move() {
 
 		collisions = new ArrayList<Square>(); // reset collisions each time
@@ -135,30 +193,26 @@ public class Globe {
 
 		int o = 0;
 		int p = 0;
-		
+
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				
-				
-				if (squares[i][j].getX() + squares[i][j].getXVel() >= size){
-					// find the amount it's gone over the limit, don't just set to 0  
+
+				if (squares[i][j].getX() + squares[i][j].getXVel() >= size) {
+					// find the amount it's gone over the limit, don't just set to 0
 					int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
-					squares[i][j].setX(amountOver);					
-				}
-				else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
+					squares[i][j].setX(amountOver);
+				} else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
 					int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
 					squares[i][j].setY(amountOver);
-				}
-				else if (squares[i][j].getX() + squares[i][j].getXVel() < 0){
+				} else if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
 					// find the amount it's gone under 0, set to size - that
 					int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
-					squares[i][j].setX(amountUnder);					
-				}
-				else if (squares[i][j].getY() + squares[i][j].getYVel() < 0){
+					squares[i][j].setX(amountUnder);
+				} else if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
 					int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
-					squares[i][j].setY(amountUnder);					
+					squares[i][j].setY(amountUnder);
 				}
-				
+
 			}
 		}
 
@@ -201,112 +255,98 @@ public class Globe {
 			int g1 = squares[o][p].getGroup();
 			int g2 = groupMap[squares[o][p].getX()][squares[o][p].getY()];
 
-			// get the speeds from the first square in these group (they are all the same)
-
-			// first cont
-			/*int aX = continents[g1].get(0).getXVel();
-			int aY = continents[g1].get(0).getYVel();
-			
-			double aAngle = Math.atan2(aX,aY);						
-			aAngle = aAngle*(180/Math.PI);
-			System.err.println(aAngle);
-			
-
-			// second cont
-			int bX = continents[g2].get(0).getXVel();
-			int bY = continents[g2].get(0).getYVel();
-			
-			double bAngle = Math.atan2(aX,aY);
-			bAngle = bAngle*(180/Math.PI);
-			System.err.println(bAngle);
-*/
 			// get mass
-			
+
 			// MATHS ***********************************
 
 			// angles, momentum, combination events etc...
-			
+
 			// relax, i have taken out the changes in direction.
-			
-			
-			// can use the resulting direction to add mountain formation in the direction of impact, away from the collision line, in angle. 
-			
-			// maybe in collisions I should let them overlap a bit. this might help make combinations look better..
+
+			// can use the resulting direction to add mountain formation in the direction of
+			// impact, away from the collision line, in angle.
+
+			// maybe in collisions I should let them overlap a bit. this might help make
+			// combinations look better..
 			// or
-			// for combinations, i can let them go into each other a little, and then when splitting them later, change their directions and ignore each other until free...
-			
-			
+			// for combinations, i can let them go into each other a little, and then when
+			// splitting them later, change their directions and ignore each other until
+			// free...
+
 			// BELOW USED:
 			// https://www.emanueleferonato.com/2007/08/19/managing-ball-vs-ball-collision-with-flash/
-			
-			
-			int mass1 = continents[g1].size();
-			int mass2 = continents[g2].size();
-			
-			double dX = continents[g1].get(0).getX() - continents[g2].get(0).getX();
-			double dY = continents[g1].get(0).getY() - continents[g2].get(0).getY();
-			
-			double collisionAngle = Math.atan2(dY,dX);
-			System.out.println(collisionAngle);
-						
-			double mag1 = Math.sqrt(continents[g1].get(0).getXVel() * continents[g1].get(0).getXVel() + continents[g1].get(0).getYVel() * continents[g1].get(0).getYVel());
-			double mag2 = Math.sqrt(continents[g2].get(0).getXVel() * continents[g2].get(0).getXVel() + continents[g2].get(0).getYVel() * continents[g2].get(0).getYVel());
-			
-			double dir1 = Math.atan2(continents[g1].get(0).getYVel(), continents[g1].get(0).getXVel());
-			double dir2 = Math.atan2(continents[g2].get(0).getYVel(), continents[g2].get(0).getXVel());
-			
-			double newXspeed1 = mag1 * Math.cos(dir1 - collisionAngle);
-			double newYspeed1 = mag1 * Math.sin(dir1 - collisionAngle);
-			
-			double newXspeed2 = mag2 * Math.cos(dir2 - collisionAngle);
-			double newYspeed2 = mag2 * Math.sin(dir2 - collisionAngle);
-			
-			double finXspeed1 = ((mass1 - mass2) * newXspeed1 + (mass2 + mass2) * newXspeed2) / (mass1 + mass2);
-			double finXspeed2 = ((mass1 + mass1) * newXspeed1 + (mass2 - mass1) * newXspeed2) / (mass1 + mass2);
-			
-			double finYspeed1 = newYspeed1;
-			double finYspeed2 = newYspeed2;
-			
-					
-			double aX = Math.cos(collisionAngle) * finXspeed1 + Math.cos(collisionAngle + Math.PI/2) * finYspeed1;
-			System.out.println(aX);
-			double aY = Math.sin(collisionAngle) * finXspeed1 + Math.sin(collisionAngle + Math.PI/2) * finYspeed1;
-			System.out.println(aY);
-			double bX = Math.cos(collisionAngle) * finXspeed2 + Math.cos(collisionAngle + Math.PI/2) * finYspeed2;
-			System.out.println(bX);
-			double bY = Math.sin(collisionAngle) * finXspeed2 + Math.sin(collisionAngle + Math.PI/2) * finYspeed2;
-			System.out.println(bY);
-			
-			
-			
+
+			/*
+			 * int mass1 = continents[g1].size(); int mass2 = continents[g2].size();
+			 * 
+			 * double dX = continents[g1].get(0).getX() - continents[g2].get(0).getX();
+			 * double dY = continents[g1].get(0).getY() - continents[g2].get(0).getY();
+			 * 
+			 * double collisionAngle = Math.atan2(dY,dX);
+			 * System.out.println(collisionAngle);
+			 * 
+			 * double mag1 = Math.sqrt(continents[g1].get(0).getXVel() *
+			 * continents[g1].get(0).getXVel() + continents[g1].get(0).getYVel() *
+			 * continents[g1].get(0).getYVel()); double mag2 =
+			 * Math.sqrt(continents[g2].get(0).getXVel() * continents[g2].get(0).getXVel() +
+			 * continents[g2].get(0).getYVel() * continents[g2].get(0).getYVel());
+			 * 
+			 * double dir1 = Math.atan2(continents[g1].get(0).getYVel(),
+			 * continents[g1].get(0).getXVel()); double dir2 =
+			 * Math.atan2(continents[g2].get(0).getYVel(), continents[g2].get(0).getXVel());
+			 * 
+			 * double newXspeed1 = mag1 * Math.cos(dir1 - collisionAngle); double newYspeed1
+			 * = mag1 * Math.sin(dir1 - collisionAngle);
+			 * 
+			 * double newXspeed2 = mag2 * Math.cos(dir2 - collisionAngle); double newYspeed2
+			 * = mag2 * Math.sin(dir2 - collisionAngle);
+			 * 
+			 * double finXspeed1 = ((mass1 - mass2) * newXspeed1 + (mass2 + mass2) *
+			 * newXspeed2) / (mass1 + mass2); double finXspeed2 = ((mass1 + mass1) *
+			 * newXspeed1 + (mass2 - mass1) * newXspeed2) / (mass1 + mass2);
+			 * 
+			 * double finYspeed1 = newYspeed1; double finYspeed2 = newYspeed2;
+			 * 
+			 * 
+			 * double aX = Math.cos(collisionAngle) * finXspeed1 + Math.cos(collisionAngle +
+			 * Math.PI/2) * finYspeed1; System.out.println(aX); double aY =
+			 * Math.sin(collisionAngle) * finXspeed1 + Math.sin(collisionAngle + Math.PI/2)
+			 * * finYspeed1; System.out.println(aY); double bX = Math.cos(collisionAngle) *
+			 * finXspeed2 + Math.cos(collisionAngle + Math.PI/2) * finYspeed2;
+			 * System.out.println(bX); double bY = Math.sin(collisionAngle) * finXspeed2 +
+			 * Math.sin(collisionAngle + Math.PI/2) * finYspeed2; System.out.println(bY);
+			 * 
+			 * for (Square a : continents[g1]) { a.setXVel((int)Math.round(aX));
+			 * a.setYVel((int)Math.round(aY)); }
+			 * 
+			 * for (Square b : continents[g2]) { b.setXVel((int)Math.round(bX));
+			 * b.setYVel((int)Math.round(bY)); } }
+			 */
+
 			// ******************************************
 
+			int aXv = continents[g1].get(0).getXVel();
+			int aYv = continents[g1].get(0).getYVel();
+			int bXv = continents[g2].get(0).getXVel();
+			int bYv = continents[g2].get(0).getYVel();
+
 			for (Square a : continents[g1]) {
-				a.setXVel((int)Math.round(aX));
-				a.setYVel((int)Math.round(aY));
+				a.setXVel(-aXv);
+				a.setYVel(-aYv);
 			}
 
 			for (Square b : continents[g2]) {
-				b.setXVel((int)Math.round(bX));
-				b.setYVel((int)Math.round(bY));
+				b.setXVel(-bXv);
+				b.setYVel(-bYv);
 			}
-			
-			
-		
-			
-			
-
 		}
 
 		// get those that overlapped
 		int force = 250;
 		for (Square v : collisions) {
 			getNeighbours(v, force);
-			
-			
-			System.err.println(v.getGroup());
 		}
-		
+
 		for (Square v : collisions) {
 			v.setHeight(force);
 		}
@@ -314,8 +354,8 @@ public class Globe {
 		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-			squares[i][j].setX(squares[i][j].getX() + (squares[i][j].getXVel()));
-			squares[i][j].setY(squares[i][j].getY() + (squares[i][j].getYVel()));
+				squares[i][j].setX(squares[i][j].getX() + (squares[i][j].getXVel()));
+				squares[i][j].setY(squares[i][j].getY() + (squares[i][j].getYVel()));
 			}
 		}
 
@@ -324,37 +364,38 @@ public class Globe {
 
 	}
 
-	// upper bound for forloop here could be related to the force involved - so a large collision will iterate more times, reaching more neighbours
+	// upper bound for forloop here could be related to the force involved - so a
+	// large collision will iterate more times, reaching more neighbours
 	// also should take in force to determine scale of mountain formation
 	public void getNeighbours(Square x, int force) {
-		
+
 		// get group of square involved
 		int g = x.getGroup();
-		
-		for (Square a : continents[g]) {
-			if ((a.getX() == x.getX()+1 || a.getX() == x.getX()-1 || a.getX() == x.getX()) && (a.getY() == x.getY()+1 || a.getY() == x.getY() -1 || a.getY() == x.getY())) {
-				if (a.getX() == x.getX() && a.getY() == x.getY()) {
-					a.setHeight(force);
-					
+
+		for (int i = 1; i < 5; i++) {
+			for (Square a : continents[g]) {
+				if (force < 10) {
+					return;
 				}
-				else {
-					a.setHeight(force/2);
-					// getNeighbours(a, force/2);
+				if ((a.getX() == x.getX() + i || a.getX() == x.getX() - i || a.getX() == x.getX())
+						&& (a.getY() == x.getY() + i || a.getY() == x.getY() - i || a.getY() == x.getY())) {
+					if (a.getX() == x.getX() && a.getY() == x.getY()) {
+						a.setHeight(force);
+
+					} else {
+						a.setHeight(force / i);
+
+					}
 				}
 			}
 		}
-		
-		
-		
-		for (int i = 0; i < force; i ++) {
-			
-			
+
+		for (int i = 0; i < force; i++) {
+
 		}
-		
-		
+
 	}
-	
-	
+
 	// run through all the Squares, getting their X and Y coordinates for 2d height
 	// array
 	public void plotToHeightMap() {
