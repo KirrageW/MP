@@ -149,8 +149,8 @@ public class Globe {
 	
 	// need to use it all to make different groups
 
-	public void newNumbers(int x, int y, int size) {
-		group1 = new ArrayList<Square>();
+	public void newNumbers(int x, int y, int size, int group) {
+		ArrayList<Square> cont = new ArrayList<Square>();
 		Random ran = new Random();
 
 		for (int i = x+2; i < size - 2; i++) {
@@ -192,14 +192,14 @@ public class Globe {
 					squares[i][j].setX(i);
 					squares[i][j].setY(j);
 					squares[i][j].setHeight(150);
-					squares[i][j].setGroup(1);
+					squares[i][j].setGroup(group);
 
-					group1.add(squares[i][j]);
+					cont.add(squares[i][j]);
 
 				}
 			}
 		}
-			continents[continentsCounter] = group1;
+			continents[continentsCounter] = cont;
 			continentsCounter++;
 			
 			plotToHeightMap();

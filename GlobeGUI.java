@@ -32,9 +32,10 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		
 		//g.makeTestContinent();
 		//g.makeOtherContinent();
-		g.newNumbers(10,10,50);
-		//g.setVelocity(1, 5, 2);
-		//g.setVelocity(2,1,4);
+		g.newNumbers(10,10,50, 1);
+		g.newNumbers(100,100,149, 2);
+		g.setVelocity(1, 5, 2);
+		g.setVelocity(2,1,4);
 		//g.plotToHeightMap();
 		
 		//g.generate(4);
