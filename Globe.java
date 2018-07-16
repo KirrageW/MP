@@ -142,36 +142,69 @@ public class Globe {
 	// iterate over the 2d array smd insert part ID numbers in the empty cells based
 	// on the contents of their surrounding cells
 	// let them expand and fight it out -- I can just take one ID, or two IDs etc.
+	
+	
+	// now make this happen in a certain area of the total area, and translate it to real square coordinates, and THEN reset the group map
+	// group map should reset normally if plot method occurs after the generation...
+	
+	// need to use it all to make different groups
 
-	public void newNumbers() {
-
+	public void newNumbers(int x, int y, int size) {
+		group1 = new ArrayList<Square>();
 		Random ran = new Random();
 
-		for (int i = 2; i < size - 2; i++) {
-			for (int j = 2; j < size - 2; j++) {
+		for (int i = x+2; i < size - 2; i++) {
+			for (int j = y+2; j < size - 2; j++) {
 				int number = ran.nextInt(4);
 				groupMap[i][j] = number;
 			}
 		}
 
-		for (int i = 2; i < size - 2; i++) {
-			for (int j = 2; j < size - 2; j++) {
+		for (int i = 2; i < this.size - 2; i++) {
+			for (int j = 2; j < this.size - 2; j++) {
 				groupMap[i][j] = getNeighbours(i, j);
 			}
 		}
 
+		// you need more or fewer of these, depending on size of grid.
 		closer();
 		closer1();
 		closer1();
+		closer1();
+		closer();
+		focus();
 
-		for (int i = 1; i < size - 1; i++) {
+		
+		// **************************************************************** VIEW NUMBERS
+	/*	for (int i = 1; i < this.size - 1; i++) {
 			System.out.println();
 
-			for (int j = 1; j < size - 1; j++) {
+			for (int j = 1; j < this.size - 1; j++) {
 				System.out.print(groupMap[i][j] + " ");
 			}
-		}
+		}*/
+		// *********************************************************************
+		
+		
+		for (int i = 2; i < this.size - 2; i++) {
+			for (int j = 2; j < this.size - 2; j++) {
+				if (groupMap[i][j] == 1) {
+					squares[i][j].setX(i);
+					squares[i][j].setY(j);
+					squares[i][j].setHeight(150);
+					squares[i][j].setGroup(1);
 
+					group1.add(squares[i][j]);
+
+				}
+			}
+		}
+			continents[continentsCounter] = group1;
+			continentsCounter++;
+			
+			plotToHeightMap();
+			plotToGroupMap();
+		
 	}
 
 	public int getNeighbours(int i, int j) {
@@ -241,6 +274,50 @@ public class Globe {
 			}
 		}
 
+	}
+	
+	// gets rid of lakes
+	public void focus() {
+		for (int i = 1; i < size-1; i++) {
+			for (int j = 1; j < size-1; j++) {
+				int numberOfNeighbours = 0;
+				int req = 3;
+				if (groupMap[i][j] == 0) {
+					if (groupMap[i - 1][j - 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i][j - 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 1][j - 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 1][j] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 1][j + 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i][j + 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i - 1][j + 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i - 1][j] > 0) {
+						numberOfNeighbours++;
+					}
+					
+					if (numberOfNeighbours > req) {
+						groupMap[i][j] = 1;
+
+					}
+				}
+			}
+		}
+	
+			
+				
 	}
 	
 	public void closer1() {
