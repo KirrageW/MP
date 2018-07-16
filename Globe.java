@@ -98,61 +98,196 @@ public class Globe {
 		continentsCounter++;
 	}
 
-	
-	
-	
-	
-	
 	// start to make an int array map to define islands
-	// can sys.out it to view it easily. 
-	
-	// generate random numbers , 1s, 2s, 3s depedning on number of initial continents you want
-	// sea is -1 
-	
+	// can sys.out it to view it easily.
+
+	// generate random numbers , 1s, 2s, 3s depedning on number of initial
+	// continents you want
+	// sea is -1
+
 	// then do things with finding neighbours and such
-	
+
 	public void generate(int x) {
-		Random r= new Random();
-		for (int i = 0; i < size*2; i ++) {
-			
-				int e = r.nextInt(size);
-				int f = r.nextInt(size);
-				
-				groupMap[e][f] = 1;
-			
+		Random r = new Random();
+		for (int i = 0; i < size * 2; i++) {
+
+			int e = r.nextInt(size);
+			int f = r.nextInt(size);
+
+			groupMap[e][f] = 1;
+
 		}
-		
-		for (int i = 0; i < size; i ++) {
+
+		for (int i = 0; i < size; i++) {
 			System.out.println("");
-		
-			for (int j = 0; j < size; j ++) {
+
+			for (int j = 0; j < size; j++) {
 				System.out.print(groupMap[i][j]);
 			}
 		}
-		
-		
-		
-		
+
+	}
+
+	// make array of pointers to grid
+	// assign first N of them IDs - 1, 2, 3, etc
+	// until array points to no spaces that doo not have IDs
+	// iterate through the array lookinh fotr spaces that dfo not have IDs
+	// if space -if space has neighbours in grid that DO have ID, assign the space
+	// the ID from the weighted selection of the IDs around it
+	// if it doesnt have neighbours with IDs, skip to next
+	//
+
+	// populate 2d array with a single instance of each part ID number, randomly
+	// distributed
+	// iterate over the 2d array smd insert part ID numbers in the empty cells based
+	// on the contents of their surrounding cells
+	// let them expand and fight it out -- I can just take one ID, or two IDs etc.
+
+	public void newNumbers() {
+
+		Random ran = new Random();
+
+		for (int i = 2; i < size - 2; i++) {
+			for (int j = 2; j < size - 2; j++) {
+				int number = ran.nextInt(4);
+				groupMap[i][j] = number;
+			}
+		}
+
+		for (int i = 2; i < size - 2; i++) {
+			for (int j = 2; j < size - 2; j++) {
+				groupMap[i][j] = getNeighbours(i, j);
+			}
+		}
+
+		closer();
+		closer1();
+		closer1();
+
+		for (int i = 1; i < size - 1; i++) {
+			System.out.println();
+
+			for (int j = 1; j < size - 1; j++) {
+				System.out.print(groupMap[i][j] + " ");
+			}
+		}
+
+	}
+
+	public int getNeighbours(int i, int j) {
+
+		int a = groupMap[i - 1][j - 1];
+		int b = groupMap[i][j - 1];
+		int c = groupMap[i + 1][j - 1];
+		int d = groupMap[i + 1][j];
+		int e = groupMap[i + 1][j + 1];
+		int f = groupMap[i][j + 1];
+		int g = groupMap[i - 1][j + 1];
+		int h = groupMap[i - 1][j];
+
+		int q = groupMap[i - 2][j - 2];
+		int w = groupMap[i][j - 2];
+		int k = groupMap[i + 2][j - 2];
+		int l = groupMap[i + 2][j];
+		int m = groupMap[i + 2][j + 2];
+		int n = groupMap[i][j + 2];
+		int o = groupMap[i - 2][j + 2];
+		int p = groupMap[i - 2][j];
+
+		return (a + b + c + d + e + f + g + h + q + w + k + l + m + n + o + p) / 16;
+
+	}
+
+	public void closer() {
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				int numberOfNeighbours = 0;
+				int req = 3;
+				if (groupMap[i][j] > 0) {
+
+					if (groupMap[i - 1][j - 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i][j - 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 1][j - 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 1][j] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 1][j + 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i][j + 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i - 1][j + 1] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i - 1][j] > 0) {
+						numberOfNeighbours++;
+					}
+
+					// whittle
+					if (numberOfNeighbours <= req) {
+						groupMap[i][j] = 0;
+
+					}
+				}
+
+			}
+		}
+
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public void closer1() {
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				int numberOfNeighbours = 0;
+				int req = 3;
+				if (groupMap[i][j] > 0) {
+
+					if (groupMap[i - 2][j - 2] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i][j - 2] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 2][j - 2] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 2][j] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i + 2][j + 2] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i][j + 2] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i - 2][j + 2] > 0) {
+						numberOfNeighbours++;
+					}
+					if (groupMap[i - 2][j] > 0) {
+						numberOfNeighbours++;
+					}
+
+					// whittle
+					if (numberOfNeighbours <= req) {
+						groupMap[i][j] = 0;
+
+					}
+				}
+
+			}
+		}
+
+	}
+
 	// temp
 	public void makeOtherContinent() {
 
