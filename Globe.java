@@ -16,9 +16,11 @@ public class Globe {
 	private int continentsCounter;
 
 	private ArrayList<Square> collisions;
+	
+	private boolean stop;
 
 	public Globe(int size) {
-
+		stop = true;
 		continents = new ArrayList[10];
 		continentsCounter = 1;
 
@@ -54,13 +56,9 @@ public class Globe {
 	// **********************************************************************************************************
 	// TO DO:
 
-	// better collisions
-
 	// better mountain generation
 
 	// rotating continents?
-
-	// sort out boundary index thing
 
 	// refactor all of it - squares and stuff
 
@@ -69,6 +67,8 @@ public class Globe {
 	// add erosion
 
 	// add ice
+	
+	// these will be published by the swing thing, to receive results during running.
 
 	// **********************************************************************************************************
 
@@ -325,11 +325,13 @@ public class Globe {
 	public void move() {
 
 		collisions = new ArrayList<Square>(); // reset collisions each time
-
+		int groupNumber = -2;
 		boolean collision = false;
 
 		int o = 0;
 		int p = 0;
+		int h = 0;
+		int k = 0;
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -389,15 +391,18 @@ public class Globe {
 						if (collision == false) {
 							o = i;
 							p = j;
+							groupNumber = groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+								                                                 							+ (squares[i][j].getYVel())];
+							h = squares[i][j].getX() + (squares[i][j].getXVel());
+							k = squares[i][j].getY() + (squares[i][j].getYVel());
+							
 						}
 
 						collision = true;
-
-						// we could amass a list of these squares FIRST, before dealing with the
-						// collision as below.
-						// this means we can changes the heights of all these squares, and their
-						// neighbours, and so on.
-						collisions.add(squares[i][j]);
+						
+						// amass a list of overlapped squares FIRST
+						collisions.add(squares[i][j]); 					
+						collisions.add(getSquare(h, k, groupNumber)); // on the other continent
 					}
 				}
 
@@ -425,6 +430,7 @@ public class Globe {
 			double ny2 = continents[g2].get(0).getYVel() * (mass2 - mass1)
 					+ 2 * (mass1 * continents[g1].get(0).getYVel());
 
+			
 			nx1 = nx1 / (mass1 + mass2);
 			System.out.println(nx1);
 			ny1 = ny1 / (mass1 + mass2);
@@ -435,15 +441,14 @@ public class Globe {
 			System.out.println(ny2);
 
 			for (Square a : continents[g1]) {
-				a.setXVel((int) nx1);
-				a.setYVel((int) ny1);
+				a.setXVel(nx1);
+				a.setYVel(ny1);
 			}
 
 			for (Square b : continents[g2]) {
-				b.setXVel((int) nx2);
-				b.setYVel((int) ny2);
+				b.setXVel(nx2);
+				b.setYVel(ny2);
 			}
-
 		}
 
 		// get those that overlapped
@@ -455,7 +460,7 @@ public class Globe {
 		for (Square v : collisions) {
 			v.setHeight(force);
 		}
-
+		
 		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -463,10 +468,8 @@ public class Globe {
 				squares[i][j].setY(squares[i][j].getY() + (squares[i][j].getYVel()));
 			}
 		}
-
 		plotToHeightMap();
 		plotToGroupMap();
-
 	}
 
 	// upper bound for forloop here could be related to the force involved - so a
@@ -494,44 +497,33 @@ public class Globe {
 				}
 			}
 		}
-
 		for (int i = 0; i < force; i++) {
-
 		}
-
 	}
 
 	// run through all the Squares, getting their X and Y coordinates for 2d height
 	// array
 	public void plotToHeightMap() {
 
-		// clear it first - but then how are you going to detect collisions - use the
-		// squares!
+		// reset height map - overwrites old positions
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				heightMap[i][j] = -1;
 
 			}
 		}
-
-		// translate Squares X and Y integers to the heightmap 2d array index - giving
-		// coordinates.
+		
+		// translate Squares X and Y integers to the heightmap 2d array index - giving coordinates.
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				// if (squares[i][j].getX() > 0 && squares[i][j].getY() > 0) {
-				heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight(); // error here , in
-																									// many cases.
-																									// arrayIndexOutofBounds:
-																									// 150... 150, -2, -
-																									// 4
-
-				// }
+				heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight(); // error here
 			}
 		}
 	}
 
 	public void plotToGroupMap() {
 
+		// reset group map - overwrites old positions
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				groupMap[i][j] = -1;
@@ -541,8 +533,7 @@ public class Globe {
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				groupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getGroup(); // index out of bounds
-																									// - 150 ???
+				groupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getGroup(); // index out of bounds																									
 			}
 		}
 	}
@@ -559,6 +550,23 @@ public class Globe {
 		}
 	}
 
+	// returns a square matching an x and y coordinate from the group map or height map
+	public Square getSquare(int x, int y, int group) {
+		
+		for (Square a : continents[group]) {
+			if (a.getX() == x && a.getY() == y) {
+				return a;
+			}
+		}
+		return null;
+		
+	}
+	
+
+	
+	
+	
+	
 	public int[][] getHeightMap() {
 		return heightMap;
 	}

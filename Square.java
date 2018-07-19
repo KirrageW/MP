@@ -1,9 +1,9 @@
 public class Square {
 	
-	private int x;
-	private int y;
-	private int xVel;
-	private int yVel;
+	private double x;
+	private double y;
+	private double xVel;
+	private double yVel;
 	private int height;
 	private int group;
 	private int generation;
@@ -31,11 +31,11 @@ public class Square {
 	
 	// COORDINATES
 	public int getX() {
-		return x;
+		return (int) Math.round(x);
 	}
 
 	public int getY() {
-		return y;
+		return (int) Math.round(y);
 	}
 
 	public void setX(int x) {
@@ -47,20 +47,20 @@ public class Square {
 	}
 	
 	// VELOCITIES
-	public void setXVel(int x) {
+	public void setXVel(double x) {
 		this.xVel = x;
 	}
 	
-	public void setYVel(int y) {
+	public void setYVel(double y) {
 		this.yVel = y;
 	}
 	
 	public int getXVel() {
-		return xVel;
+		return (int) Math.round(xVel);
 	}
 	
 	public int getYVel() {
-		return yVel;
+		return (int) Math.round(yVel);
 	}
 	
 	//HEIGHT
@@ -80,5 +80,9 @@ public class Square {
 	public int getGroup() {
 		return group;
 	}
+	
+	
+	
+	
 
 }

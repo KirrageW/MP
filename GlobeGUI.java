@@ -7,10 +7,13 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 public class GlobeGUI extends JFrame implements ActionListener{
 
@@ -19,33 +22,36 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	private JPanel panel;
 	private JPanel panel2;
 	private JButton advance;
-	
+	private JButton play;
+	private JButton pause;
 	
 	private Graphics2D gr;
 	private Graphics2D g2d;
 	
 	private BufferedImage img;
 	
+	private boolean stop;
+	
+	private PlayerTask plt;
+	
 	
 	public GlobeGUI(int size) {		
+		
+		stop = false;
 		g = new Globe(size);
 		
-		//g.makeTestContinent();
-		//g.makeOtherContinent();
 		g.newNumbers(10,10,50, 1);
 		g.newNumbers(100,100,149, 2);
-		g.setVelocity(1, 1, 1);
-		g.setVelocity(2,-2,-2);
-		//g.plotToHeightMap();
+		g.setVelocity(1, 1, 2);
+		g.setVelocity(2,-3,-1);
 		
-		//g.generate(4);
-		
-		//g.singlePixel();
-		//g.plotToMap();
-		
+			
 		this.size = size;
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		plt = new PlayerTask();
+		
 		layoutComponents();
 	}
 	
@@ -111,6 +117,12 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		advance.addActionListener(this);
 		panel2.add(advance);
 		
+		play = new JButton("Play");
+		play.addActionListener(this);
+		pause = new JButton("Stop");
+		pause.addActionListener(this);
+		panel2.add(play);
+		panel2.add(pause);
 	
 		this.add(panel2,BorderLayout.SOUTH);
 		this.getContentPane().add(panel);
@@ -125,14 +137,82 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			redraw();
 			System.out.println("Advance!");
 			
-		}		
+		}
+		if (e.getSource() == play) {
+			stop = false;
+			play.setEnabled(false);
+			plt.execute();
+		}
+		
+		if (e.getSource() == pause) {
+			stop = true;
+			play.setEnabled(true);
+		}
 	}
+	
+	private class PlayerTask extends SwingWorker<Void, Integer>{
+		protected Void doInBackground() {
+			while (!stop) {
+				try {
+					Thread.sleep(250);
+				} catch (InterruptedException e) {
+					
+					e.printStackTrace();
+				}
+				g.move();
+				try {
+					Thread.sleep(250);
+				} catch (InterruptedException e) {
+					
+					e.printStackTrace();
+				}
+				redraw();
+			}
+			return null;
+			
+		}
+		
+		protected void process(List<Integer> seaLevels) {
+			
+		}
+		
+		protected void done() {
+			play.setEnabled(true);
+		}
+	}
+	
+	
+	/*public void play() {
+		while (!stop) {
+			try {
+				Thread.sleep(250);
+			} catch (InterruptedException e) {
+				
+				e.printStackTrace();
+			}
+			g.move();
+			try {
+				Thread.sleep(250);
+			} catch (InterruptedException e) {
+				
+				e.printStackTrace();
+			}
+			redraw();
+		}
+	}*/
 		
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-		GlobeGUI main = new GlobeGUI(150);
 		
+		SwingUtilities.invokeLater(new Runnable(){
+
+			@Override
+			public void run() {
+				
+				new GlobeGUI(150);
+				
+			}
+			
+		});
 		
 		
 	}
