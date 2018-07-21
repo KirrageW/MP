@@ -40,9 +40,9 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		stop = false;
 		g = new Globe(size);
 
-		g.newNumbers(10, 10, 50, 75, 1);
+		g.newNumbers(10, 10, 50, 100, 1);
 
-		g.newNumbers(100, 100, 90, 35, 2);
+		g.newNumbers(100, 100, 120, 50, 2);
 
 		g.newNumbers(190, 190, 50, 50, 3);
 		g.setVelocity(1, 3, 3);

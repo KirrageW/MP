@@ -14,7 +14,6 @@ public class Globe {
 
 	private ArrayList<Square>[] continents;
 	private int continentsCounter;
-
 	private ArrayList<Square> collisions;
 
 	private boolean stop;
@@ -93,6 +92,7 @@ public class Globe {
 
 		// you need more or fewer of these, depending on size of grid.
 
+		closer();
 		closer1();
 		focus();
 		closer();
@@ -377,8 +377,8 @@ public class Globe {
 			int g2 = groupMap[squares[o][p].getX() + squares[o][p].getXVel()][squares[o][p].getY()
 					+ squares[o][p].getYVel()];
 
-			System.out.println(g1);
-			System.out.println(g2);
+			//System.out.println(g1);
+			//System.out.println(g2);
 			// masses can simply equal number of squares
 			int mass1 = continents[g1].size();
 			int mass2 = continents[g2].size();
@@ -404,23 +404,25 @@ public class Globe {
 			int numberOfSquaresInFirst = 0;
 
 			for (Square q : collisions) {
-				if (q.getGroup() == g1) { // null pointer
-					numberOfSquaresInFirst++;
+				if (q != null) {
+					if (q.getGroup() == g1) { // null pointer
+						numberOfSquaresInFirst++;
+					}
 				}
 			}
 
 			int numberInSecond = collisions.size() - numberOfSquaresInFirst;
 
-			System.out.println(numberInSecond + " " + numberOfSquaresInFirst);
+			//System.out.println(numberInSecond + " " + numberOfSquaresInFirst);
 			// spread force among number of squares in each - gives proportional mountain
 			// building
 
 			// switch because it's a transfer of energy.
 			force1 = force1 / numberInSecond;
-			System.err.println(force1);
+			//System.err.println(force1);
 
 			force2 = force2 / numberOfSquaresInFirst;
-			System.err.println(force2);
+			//System.err.println(force2);
 
 			if (force1 > 400) {
 				force1 = 400;
@@ -443,7 +445,7 @@ public class Globe {
 			force1 = ((force1 - 20) / oldRange) * newRange + 30;
 			force2 = ((force2 - 20) / oldRange) * newRange + 30;
 
-			System.out.println("first: " + force1 + " second: " + force2 + " " + collisions.size());
+			//System.out.println("first: " + force1 + " second: " + force2 + " " + collisions.size());
 
 			// apply height changes to affected squares and near neighbours
 			for (Square v : collisions) {
