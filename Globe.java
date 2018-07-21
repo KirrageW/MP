@@ -58,51 +58,44 @@ public class Globe {
 	// **********************************************************************************************************
 	// TO DO:
 
-	// better mountain generation
-
 	// refactor all of it - squares and stuff
 
 	// add GUI stuff
-
-	// add erosion
-
-	// add ice
-
-	// these will be published by the swing thing, to receive results during
-	// running.
-
-	// why mountain building looks shit
+	
+	// sea level
 
 	// big splits in continents - boundary collisions.
 
 	// **********************************************************************************************************
 
-	public void newNumbers(int x, int y, int size, int group) {
+	public void newNumbers(int x, int y, int size, int sizeY, int group) {
 		ArrayList<Square> cont = new ArrayList<Square>();
 		Random ran = new Random();
 
-		for (int i = x + 3; i < x+size - 3; i++) {
-			for (int j = y + 3; j < y+size - 3; j++) {
+		for (int i = 0; i < this.size; i++) {
+			for (int j = 0; j < this.size; j++) {
+				groupMap[i][j] = 0;
+			}
+		}
+
+		for (int i = x + 5; i < x + size - 5; i++) {
+			for (int j = y + 5; j < y + sizeY - 5; j++) {
 				int number = ran.nextInt(4);
 				groupMap[i][j] = number;
 			}
 		}
 
-		for (int i = 3; i < this.size - 3; i++) {
-			for (int j = 3; j < this.size - 3; j++) {
+		for (int i = 7; i < this.size - 7; i++) {
+			for (int j = 7; j < this.size - 7; j++) {
 				groupMap[i][j] = getNeighbours(i, j);
 			}
 		}
 
 		// you need more or fewer of these, depending on size of grid.
+
+		closer1();
+		focus();
 		closer();
-		focus();
-		closer();
-		closer1();
-		closer1();
-		focus();
-		closer1();
-		focus();
 
 		for (int i = 0; i < this.size; i++) {
 			for (int j = 0; j < this.size; j++) {
@@ -113,16 +106,12 @@ public class Globe {
 					squares[i][j].setGroup(group);
 
 					cont.add(squares[i][j]);
-
 				}
 			}
 		}
 
 		continents[continentsCounter] = cont;
 		continentsCounter++;
-
-		plotToHeightMap();
-		plotToGroupMap();
 
 	}
 
@@ -733,15 +722,15 @@ public class Globe {
 	}
 
 	public void addIce() {
-		for (int i = 0; i < size/5; i ++) {
-			for (int j = 0; j < size; j ++) {
+		for (int i = 0; i < size / 5; i++) {
+			for (int j = 0; j < size; j++) {
 				if (heightMap[i][j] > 0 && heightMap[i][j] < 175) {
 					iceCover++;
 				}
 			}
 		}
-		for (int i = size-(size/5); i < size; i ++) {
-			for (int j = 0; j < size; j ++) {
+		for (int i = size - (size / 5); i < size; i++) {
+			for (int j = 0; j < size; j++) {
 				if (heightMap[i][j] > 0 && heightMap[i][j] < 175) {
 					iceCover++;
 				}
@@ -755,6 +744,11 @@ public class Globe {
 
 	public void setHeightMap(int[][] map) {
 		this.heightMap = map;
+	}
+
+	public int[][] getGroupMap() {
+		// TODO Auto-generated method stub
+		return groupMap;
 	}
 
 }
