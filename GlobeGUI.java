@@ -24,6 +24,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 	private JButton advance;
 	private JButton play;
 	private JButton pause;
+	private JButton ice;
 	
 	private Graphics2D gr;
 	private Graphics2D g2d;
@@ -41,9 +42,11 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		g = new Globe(size);
 		
 		g.newNumbers(10,10,50, 1);
-		g.newNumbers(100,100,149, 2);
-		g.setVelocity(1, 1, 2);
-		g.setVelocity(2,-3,-1);
+		//g.newNumbers(100,100,50, 2);
+		g.newNumbers(190,190,50, 3);
+		g.setVelocity(1, 3, 3);
+		g.setVelocity(2,-3,-3);
+		//g.setVelocity(3,-3,-3);
 		
 			
 		this.size = size;
@@ -51,7 +54,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		plt = new PlayerTask();
-		
+		plt.execute();
 		layoutComponents();
 	}
 	
@@ -64,10 +67,21 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			for (int j = 0; j < size; j++) {
 				int c = g.getHeightMap()[i][j];
 				if (c < 0) {
-					gr.setColor(new Color(10, 10, 100));
-				} else {
-					gr.setColor(new Color(c, c, c));
+					gr.setColor(new Color(20, 20, 130));
+				} 
+				
+				else if (c > 0 && c < 175) {
+					gr.setColor(new Color(c, c +70, c));
+				
+					if (j <= size/5 || j > size-(size/5)) {
+						gr.setColor(Color.WHITE);
+					}				
 				}
+				
+				else {
+					gr.setColor(Color.GRAY);
+				}
+				
 				gr.fillRect(i, j, 1, 1);
 			}
 		}
@@ -87,10 +101,21 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			for (int j = 0; j < size; j++) {
 				int c = g.getHeightMap()[i][j];
 				if (c < 0) {
-					gr.setColor(new Color(10, 10, 100));
-				} else {
-					gr.setColor(new Color(c, c, c));
+					gr.setColor(new Color(20, 20, 130));
+				} 
+				
+				else if (c > 0 && c < 175) {
+					gr.setColor(new Color(c, c +70, c));
+				
+					if (j <= size/5 || j > size-(size/5)) {
+						gr.setColor(Color.WHITE);
+					}				
 				}
+				
+				else {
+					gr.setColor(Color.GRAY);
+				}
+				
 				gr.fillRect(i, j, 1, 1);
 			}
 		}
@@ -121,8 +146,13 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		play.addActionListener(this);
 		pause = new JButton("Stop");
 		pause.addActionListener(this);
+		ice = new JButton("Show/Hide ice");
+		ice.addActionListener(this);
+		
 		panel2.add(play);
 		panel2.add(pause);
+		panel2.add(ice);
+		
 	
 		this.add(panel2,BorderLayout.SOUTH);
 		this.getContentPane().add(panel);
@@ -142,17 +172,19 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			stop = false;
 			play.setEnabled(false);
 			plt.execute();
+			
 		}
 		
 		if (e.getSource() == pause) {
 			stop = true;
 			play.setEnabled(true);
+			plt.cancel(false);
 		}
 	}
 	
 	private class PlayerTask extends SwingWorker<Void, Integer>{
 		protected Void doInBackground() {
-			while (!stop) {
+			while (stop) {
 				try {
 					Thread.sleep(250);
 				} catch (InterruptedException e) {
@@ -181,25 +213,6 @@ public class GlobeGUI extends JFrame implements ActionListener{
 		}
 	}
 	
-	
-	/*public void play() {
-		while (!stop) {
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				
-				e.printStackTrace();
-			}
-			g.move();
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				
-				e.printStackTrace();
-			}
-			redraw();
-		}
-	}*/
 		
 	public static void main(String[] args) {
 		
@@ -208,7 +221,7 @@ public class GlobeGUI extends JFrame implements ActionListener{
 			@Override
 			public void run() {
 				
-				new GlobeGUI(150);
+				new GlobeGUI(250);
 				
 			}
 			

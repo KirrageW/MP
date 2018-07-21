@@ -7,20 +7,37 @@ public class Square {
 	private int height;
 	private int group;
 	private int generation;
+	
+	private boolean checked;
 		
 	public Square(int height) {
-		this.height = height;		
+		this.height = height;	
+		checked = false;
+	}
+	
+	public void setChecked(boolean x) {
+		if (x == true) {
+			checked = true;
+		}
+		else
+			checked = false;
+	}
+	
+	public boolean checked() {
+		return checked;
 	}
 	
 	public Square(int height, int generation) {
 		this.height = height;	
 		this.generation = generation;
+		checked = false;
 	}
 	
 	public Square(int x, int y, int height) {
 		this.x = x;
 		this.y = y;
 		this.height = height;
+		checked = false;
 	}
 	
 
@@ -70,6 +87,9 @@ public class Square {
 	
 	public void setHeight(int h) {
 		this.height = h;
+		if (height > 250) {
+			this.height = 250;
+		}
 	}
 	
 	//GROUP
