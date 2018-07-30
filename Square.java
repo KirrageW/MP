@@ -6,12 +6,14 @@ public class Square {
 	private double yVel;
 	private int height;
 	private int group;
+	private int superGroup;
 	private int generation;
 	
 	private boolean checked;
 		
 	public Square(int height) {
 		this.height = height;	
+		this.superGroup = -1; // represents isolated continent
 		checked = false;
 	}
 	
@@ -101,6 +103,14 @@ public class Square {
 		return group;
 	}
 	
+	//SUPERGROUP
+	public void setSuperGroup(int sG) {
+		this.superGroup = sG;
+	}
+	
+	public int getSuperGroup() {
+		return this.superGroup;
+	}
 	
 	
 	

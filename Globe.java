@@ -12,7 +12,12 @@ public class Globe {
 	private int[][] groupMap; // this will be a 2d array map that can check for the presence of two Squares in
 								// the same place
 
+	private int[][] superGroupMap; // this will be a 2d array map that checks positions of superContinents
+
 	private ArrayList<Square>[] continents;
+
+	private int[] superContinentSize;
+
 	private int continentsCounter;
 	private ArrayList<Square> collisions;
 
@@ -23,6 +28,7 @@ public class Globe {
 		iceCover = 0;
 		stop = true;
 		continents = new ArrayList[10];
+		superContinentSize = new int[10];
 		continentsCounter = 1;
 
 		this.size = size;
@@ -49,7 +55,14 @@ public class Globe {
 		groupMap = new int[size][size];
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				groupMap[i][j] = 0;
+				groupMap[i][j] = -1;
+			}
+		}
+
+		superGroupMap = new int[size][size];
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				superGroupMap[i][j] = -1;
 			}
 		}
 	}
@@ -60,7 +73,7 @@ public class Globe {
 	// refactor all of it - squares and stuff
 
 	// add GUI stuff
-	
+
 	// sea level
 
 	// big splits in continents - boundary collisions.
@@ -69,6 +82,9 @@ public class Globe {
 
 	public void newNumbers(int x, int y, int size, int sizeY, int group) {
 		ArrayList<Square> cont = new ArrayList<Square>();
+
+		Continent con = new Continent(continentsCounter);
+
 		Random ran = new Random();
 
 		for (int i = 0; i < this.size; i++) {
@@ -95,6 +111,10 @@ public class Globe {
 		closer();
 		closer1();
 		focus();
+		closer1();
+		focus();
+		closer1();
+		focus();
 		closer();
 
 		for (int i = 0; i < this.size; i++) {
@@ -103,13 +123,17 @@ public class Globe {
 					squares[i][j].setX(i);
 					squares[i][j].setY(j);
 					squares[i][j].setHeight(75);
-					squares[i][j].setGroup(group);
-
+					squares[i][j].setGroup(group); // group should be same as continentsCounter
+					squares[i][j].setSuperGroup(group); 
+					superContinentSize[continentsCounter]++;
 					cont.add(squares[i][j]);
+					
+					
 				}
 			}
 		}
 
+		
 		continents[continentsCounter] = cont;
 		continentsCounter++;
 
@@ -271,7 +295,7 @@ public class Globe {
 
 	}
 
-	// sets velocities of all members of chosen group
+	// sets velocities of all members of chosen group CHANGE TO USE CONTINENTS
 	public void setVelocity(int group, int xVel, int yVel) {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -285,6 +309,7 @@ public class Globe {
 
 	public void move() {
 
+		// captures specific squares.
 		collisions = new ArrayList<Square>(); // reset collisions each time
 		int groupNumber = -2;
 		boolean collision = false;
@@ -333,6 +358,7 @@ public class Globe {
 			}
 		}
 
+		// NEW ************* maybe try putting this check before the boundaries check
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 
@@ -345,25 +371,34 @@ public class Globe {
 					if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
 							+ (squares[i][j].getYVel())] != squares[i][j].getGroup()) {
 
-						// save i and j of first instance - to get groups and stuff
-						if (collision == false) {
-							o = i;
-							p = j;
-							groupNumber = groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j]
-									.getY() + (squares[i][j].getYVel())];
-							h = squares[i][j].getX() + (squares[i][j].getXVel());
-							k = squares[i][j].getY() + (squares[i][j].getYVel());
+						// is supergroup present here.
+						if (superGroupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+								+ (squares[i][j].getYVel())] > 0) {
+							// is it part of same supergroup.
+							if (superGroupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+									+ (squares[i][j].getYVel())] != squares[i][j].getSuperGroup()) {
 
+								// save i and j of first instance - to get groups and stuff
+								if (collision == false) {
+									o = i;
+									p = j;
+									groupNumber = groupMap[squares[i][j].getX()
+											+ (squares[i][j].getXVel())][squares[i][j].getY()
+													+ (squares[i][j].getYVel())];
+									h = squares[i][j].getX() + (squares[i][j].getXVel());
+									k = squares[i][j].getY() + (squares[i][j].getYVel());
+								}
+
+								collision = true;
+
+								// amass a list of overlapped squares FIRST
+								collisions.add(squares[i][j]);
+								collisions.add(getSquare(h, k, groupNumber)); // on the other continent
+
+								// IF NUMBER IN COLLISIONS IS ABOVE PROPORTION IN CONTINENTS, THEN COMBINE
+								// CONTINENTS
+							}
 						}
-
-						collision = true;
-
-						// amass a list of overlapped squares FIRST
-						collisions.add(squares[i][j]);
-						collisions.add(getSquare(h, k, groupNumber)); // on the other continent
-
-						// IF NUMBER IN COLLISIONS IS ABOVE PROPORTION IN CONTINENTS, THEN COMBINE
-						// CONTINENTS
 					}
 				}
 
@@ -377,8 +412,8 @@ public class Globe {
 			int g2 = groupMap[squares[o][p].getX() + squares[o][p].getXVel()][squares[o][p].getY()
 					+ squares[o][p].getYVel()];
 
-			//System.out.println(g1);
-			//System.out.println(g2);
+			// System.out.println(g1);
+			// System.out.println(g2);
 			// masses can simply equal number of squares
 			int mass1 = continents[g1].size();
 			int mass2 = continents[g2].size();
@@ -413,16 +448,16 @@ public class Globe {
 
 			int numberInSecond = collisions.size() - numberOfSquaresInFirst;
 
-			//System.out.println(numberInSecond + " " + numberOfSquaresInFirst);
+			// System.out.println(numberInSecond + " " + numberOfSquaresInFirst);
 			// spread force among number of squares in each - gives proportional mountain
 			// building
 
 			// switch because it's a transfer of energy.
 			force1 = force1 / numberInSecond;
-			//System.err.println(force1);
+			// System.err.println(force1);
 
 			force2 = force2 / numberOfSquaresInFirst;
-			//System.err.println(force2);
+			// System.err.println(force2);
 
 			if (force1 > 400) {
 				force1 = 400;
@@ -445,7 +480,8 @@ public class Globe {
 			force1 = ((force1 - 20) / oldRange) * newRange + 30;
 			force2 = ((force2 - 20) / oldRange) * newRange + 30;
 
-			//System.out.println("first: " + force1 + " second: " + force2 + " " + collisions.size());
+			// System.out.println("first: " + force1 + " second: " + force2 + " " +
+			// collisions.size());
 
 			// apply height changes to affected squares and near neighbours
 			for (Square v : collisions) {
@@ -460,7 +496,7 @@ public class Globe {
 
 			// should they combine? - if amount of continent collided (overlapped) is
 			// greater than 10% of total continent, yes
-			if (proportion > 0.10) {
+			if (proportion > 0.001) {
 
 				// momentum before of both
 				double Ax = mass1 * speedXfirst;
@@ -476,21 +512,53 @@ public class Globe {
 				totalX = totalX / (mass1 + mass2);
 				totalY = totalY / (mass1 + mass2);
 
-				for (Square a : continents[g1]) {
-					a.setXVel(totalX);
-					a.setYVel(totalY);
+				int sg1 = continents[g1].get(0).getSuperGroup();
+				int sg2 = continents[g2].get(0).getSuperGroup();
+
+				
+				// if both isolated - neither is in a supercontinent already
+				int superContParent = 0;
+				if (superContinentSize[g1] >= superContinentSize[g2]) {
+					superContParent = sg1;
+					superContinentSize[superContParent] = superContinentSize[superContParent]+ continents[g2].size(); // add smaller size to larger super continent size
 				}
-
-				for (Square b : continents[g2]) {
-					b.setXVel(totalX);
-					b.setYVel(totalY);
+				else {
+					superContParent = sg2;
+					superContinentSize[superContParent] = superContinentSize[superContParent]+ continents[g1].size();
 				}
+				
+				
+			
+					// so supercontinent ID is assigned as the bigger supercontinent ( remains same if already is bigger supercontinent)
+					for (Square a : continents[g1]) {
+						a.setXVel(totalX);
+						a.setYVel(totalY);
+						a.setSuperGroup(superContParent);
 
-				// now these are going to collide with each other again, so they have to ignore
-				// each other...
+					}
 
-				// easier if it was a data structure, then could give it a supercontinent pair
-				// value...
+					for (Square b : continents[g2]) {
+						b.setXVel(totalX);
+						b.setYVel(totalY);
+						b.setSuperGroup(superContParent);
+					}
+				
+				
+				
+				
+				
+				// make sure corrent supergroup is assigned if one is already in one, or both
+				// are isolated etc.
+				// furthermore, if one is already in it, or both are, then the other continents'
+				// speeds in these groups will need to be updated
+				// AND if a larger supercontinent is being made, then again these other squares
+				// will need to have that number updated too.
+			
+
+				// maybe to speed this up, can add continents physically to supercontinent
+				// collections, to speed up speed changes etc...
+				// and then get the size - the bigger or equal supercontient remains the same
+				// ID, the other sqitches and its squares are added!.
 
 			}
 
@@ -572,6 +640,8 @@ public class Globe {
 		}
 		plotToHeightMap();
 		plotToGroupMap();
+		plotToSuperGroupMap();
+		iceCover();
 	}
 
 	public void getNeighbours(Square x, int force) {
@@ -672,6 +742,24 @@ public class Globe {
 		}
 	}
 
+	public void plotToSuperGroupMap() {
+
+		// reset group map - overwrites old positions
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				superGroupMap[i][j] = -1;
+
+			}
+		}
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				superGroupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getSuperGroup(); // index out
+																											// of bounds
+			}
+		}
+	}
+
 	// plot new positions on the group map, and loop through to see if any planned
 	// positions have continent in them.
 	public void displayGroupMap() {
@@ -723,7 +811,9 @@ public class Globe {
 		}
 	}
 
-	public void addIce() {
+	// wrong sides
+	public void iceCover() {
+		iceCover = 0;
 		for (int i = 0; i < size / 5; i++) {
 			for (int j = 0; j < size; j++) {
 				if (heightMap[i][j] > 0 && heightMap[i][j] < 175) {
@@ -738,6 +828,12 @@ public class Globe {
 				}
 			}
 		}
+
+		double icePerCent = ((double) iceCover / (250 * 250)) * 100;
+
+		// roughly taking 1% cover of ice above the water level, of total world surface,
+		// to translate to globally 10m of sea level.
+		System.err.println("Sea level change = -" + icePerCent * 10 + "m");
 	}
 
 	public int[][] getHeightMap() {

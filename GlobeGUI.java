@@ -40,11 +40,11 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		stop = false;
 		g = new Globe(size);
 
-		g.newNumbers(10, 10, 50, 100, 1);
+		g.newNumbers(10, 10, 100, 100, 1);
 
 		g.newNumbers(100, 100, 120, 50, 2);
 
-		g.newNumbers(190, 190, 50, 50, 3);
+		g.newNumbers(100, 190, 100, 50, 3);
 		g.setVelocity(1, 3, 3);
 		g.setVelocity(2, -3, -3);
 		g.setVelocity(3, -1, 2);
@@ -163,7 +163,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		if (e.getSource() == advance) {
 			g.move();
 			redraw();
-			System.out.println("Advance!");
 
 		}
 		if (e.getSource() == play) {
@@ -182,7 +181,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	private class PlayerTask extends SwingWorker<Void, Integer> {
 		protected Void doInBackground() {
-			while (stop) {
+			while (!stop) {
 				try {
 					Thread.sleep(250);
 				} catch (InterruptedException e) {

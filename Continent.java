@@ -7,6 +7,8 @@ public class Continent {
 	private int speedY;
 	private int id;
 	
+	private int superContinent;
+	
 	public Continent(int id) {
 		this.id = id;
 		children = new ArrayList<Square>();
@@ -48,6 +50,15 @@ public class Continent {
 		return children;
 	}
 	
+	public void setSuperContinent(int x) {
+		this.superContinent = x;
+	}
+	
+	public int getSuperContinent() {
+		return this.superContinent;
+	}
+	
+
 	
 	
 }
