@@ -125,6 +125,7 @@ public class Globe {
 					squares[i][j].setHeight(75);
 					squares[i][j].setGroup(group); // group should be same as continentsCounter
 					squares[i][j].setSuperGroup(group); 
+					//System.out.println("group variable is "+ group + " and contCounter is "+ continentsCounter);
 					superContinentSize[continentsCounter]++;
 					cont.add(squares[i][j]);
 					
@@ -133,6 +134,7 @@ public class Globe {
 			}
 		}
 
+		System.out.println("size of superCon1 :"+superContinentSize[continentsCounter]+ ", for group "+ group);
 		
 		continents[continentsCounter] = cont;
 		continentsCounter++;
@@ -309,6 +311,10 @@ public class Globe {
 
 	public void move() {
 
+		// ADD IN RANDOM CHANCE OF SUPERCONTINENTS BREAKING UP.
+		
+		
+		
 		// captures specific squares.
 		collisions = new ArrayList<Square>(); // reset collisions each time
 		int groupNumber = -2;
@@ -518,23 +524,24 @@ public class Globe {
 				
 				// if both isolated - neither is in a supercontinent already
 				int superContParent = 0;
-				if (superContinentSize[g1] >= superContinentSize[g2]) {
+				if (superContinentSize[sg1] >= superContinentSize[sg2]) {
 					superContParent = sg1;
-					superContinentSize[superContParent] = superContinentSize[superContParent]+ continents[g2].size(); // add smaller size to larger super continent size
+					System.out.println("1Before: "+superContinentSize[sg1]);
+					superContinentSize[superContParent] = superContinentSize[superContParent]+ superContinentSize[sg2]; // add smaller size to larger super continent size
+					System.out.println("1After: "+superContinentSize[sg1]);
 				}
 				else {
 					superContParent = sg2;
-					superContinentSize[superContParent] = superContinentSize[superContParent]+ continents[g1].size();
+					System.out.println("2Before: "+superContinentSize[sg2]);
+					superContinentSize[superContParent] = superContinentSize[superContParent]+ superContinentSize[sg1];
+					System.out.println("2After: "+superContinentSize[sg2]);
 				}
-				
-				
-			
+						
 					// so supercontinent ID is assigned as the bigger supercontinent ( remains same if already is bigger supercontinent)
 					for (Square a : continents[g1]) {
 						a.setXVel(totalX);
 						a.setYVel(totalY);
 						a.setSuperGroup(superContParent);
-
 					}
 
 					for (Square b : continents[g2]) {
@@ -542,7 +549,18 @@ public class Globe {
 						b.setYVel(totalY);
 						b.setSuperGroup(superContParent);
 					}
+					
+					for (int i = 0 ; i < size; i ++) {
+						for (int j = 0; j < size; j ++) {
+							if (squares[i][j].getSuperGroup() == superContParent) {
+								squares[i][j].setXVel(totalX);
+								squares[i][j].setYVel(totalY);
+							}
+						}
+					}
 				
+					System.out.println(superContParent);
+					System.out.println("The larger one is now "+ superContinentSize[superContParent]);
 				
 				
 				
@@ -588,6 +606,29 @@ public class Globe {
 					b.setXVel(nx2);
 					b.setYVel(ny2);
 				}
+				
+				// and those in supercontinent - but this doesnt take into account the weight of the supercontinent, which it is now supposedly affecting - mistake.
+				int sg1 = continents[g1].get(0).getSuperGroup();
+				int sg2 = continents[g2].get(0).getSuperGroup();
+				
+				for (int i = 0 ; i < size; i ++) {
+					for (int j = 0; j < size; j ++) {
+						if (squares[i][j].getSuperGroup() > 0) {
+							if (squares[i][j].getSuperGroup() == sg1) {
+							squares[i][j].setXVel(nx1);
+							squares[i][j].setYVel(ny1);
+							}
+						}
+							if (squares[i][j].getSuperGroup() == sg2) {
+							squares[i][j].setXVel(nx2);
+							squares[i][j].setYVel(ny2);
+							}
+						
+					}
+				}
+				
+				
+				
 			}
 
 			// re-check for boundary crossings again
