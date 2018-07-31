@@ -76,8 +76,6 @@ public class Globe {
 
 	// sea level
 
-	// big splits in continents - boundary collisions.
-
 	// mountain formation on leading edge through sea space?
 
 	// ron's maths
@@ -324,44 +322,56 @@ public class Globe {
 
 	public void move() {
 
+		System.out.println("Continent 1 id : "+ continents[1].get(0).getGroup() + "Continent 1 supID : "+continents[1].get(0).getSuperGroup()
+				+ "Continent 2 id: "+continents[2
+				                                ].get(0)
+				.getGroup()
+				+ "continent 2 supID: "+ continents[2].get(0).getSuperGroup());
 		// ADD IN RANDOM CHANCE OF SUPERCONTINENTS BREAKING UP.
 
 		// if two continents share the same supercontinent ID, give them a chance at
 		// breaking apart.
 
 		Random t = new Random();
-		int possibility = t.nextInt(3);
+		int possibility = t.nextInt(15); // increase number to control rarity of new boundary formation
 		// basically - do any continents share the same supergroup ID?
 		// if so, find the one that joined the larger supergroup, change its superGroup
 		// ID back to its group ID
 		// inverse its direction to simulate a new divergent boundary.
 		if (possibility == 2) {
 			System.out.println("It's happening");
-			for (int i = 1; i < continentsCounter - 1; i++) {
-				for (int j = 2; j <= continentsCounter - 1; j++) {
+			for (int i = 1; i < continentsCounter; i++) {
+				for (int j = 1; j < continentsCounter; j++) {
+					if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
 					if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
 						System.out.println("It's happening1");
 						if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
 							System.out.println("It's happening2");
 							if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
+								int randXspd = t.nextInt(4) - t.nextInt(4);
+								int randYspd = t.nextInt(4) - t.nextInt(4);
 								for (Square a : continents[i]) {
 									a.setSuperGroup(a.getGroup());
-									a.setXVel(t.nextInt(4) - t.nextInt(4));
-									a.setYVel(t.nextInt(4) - t.nextInt(4));
+									a.setXVel(randXspd);
+									a.setYVel(randYspd);
 								}
 							} else {
 								for (Square a : continents[i]) {
 									a.setSuperGroup(a.getGroup());
 									a.setXVel(-a.getXVel());
 									a.setYVel(-a.getYVel());
+									
 								}
+								
 							}
-						} else {
+						}else {
 							if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
+								int randXspd = t.nextInt(4) - t.nextInt(4);
+								int randYspd = t.nextInt(4) - t.nextInt(4);
 								for (Square a : continents[j]) {
 									a.setSuperGroup(a.getGroup());
-									a.setXVel(t.nextInt(4) - t.nextInt(4));
-									a.setYVel(t.nextInt(4) - t.nextInt(4));
+									a.setXVel(randXspd);
+									a.setYVel(randYspd);
 								}
 							} else {
 								System.out.println("It's happening3");
@@ -371,7 +381,7 @@ public class Globe {
 									a.setYVel(-a.getYVel());
 								}
 							}
-
+						}
 						}
 					}
 				}
@@ -468,7 +478,7 @@ public class Globe {
 			force1 = force1 * 0.25;
 			force2 = force2 * 0.25;
 
-			makeMountains(force1, force2, g1);
+			makeMountains(force1, force2, g1, collisions);
 
 			// need to slow down the continents a little, but not change their directions at
 			// all...
@@ -570,13 +580,14 @@ public class Globe {
 				force1 = force1 * mountainCoefficient;
 				force2 = force2 * mountainCoefficient;
 
-				makeMountains(force1, force2, g1);
+				makeMountains(force1, force2, g1, collisions);
 
 			}
 
 			else {
 
-				// carry on...
+				
+				
 
 			}
 
@@ -584,6 +595,26 @@ public class Globe {
 			checkBoundaries();
 		}
 
+		// carry on...
+		ArrayList<Square> edges = new ArrayList<Square>();
+		
+		// make mountains on leading edge
+		for (int i = 0; i < size; i ++) {
+			for (int j = 0; j < size; j ++) {
+				if (squares[i][j].getHeight() > 0) {
+					// if new location is ocean, must be on leading edge
+					if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY() + (squares[i][j].getYVel())] < 0) {
+						// no reduction in speed, because it is being driven by convection current
+						edges.add(squares[i][j]);
+						
+					}
+				}
+			}
+		}
+		// how much force, not much
+		
+		makeMountains(50,50, edges);
+		
 		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -643,7 +674,7 @@ public class Globe {
 		}
 	}
 
-	public void makeMountains(double force1, double force2, int g1) {
+	public void makeMountains(double force1, double force2, int g1, ArrayList<Square> squares) {
 		if (force1 > 300) {
 			force1 = 500;
 		}
@@ -666,22 +697,52 @@ public class Globe {
 		force2 = ((force2 - 20) / oldRange) * newRange + 30;
 
 		// apply height changes to affected squares and near neighbours
-		for (Square v : collisions) {
+		for (Square v : squares) {
 
 			if (v.getGroup() == g1)
-				getNeighbours(v, (int) Math.round(force1));
+				getNeighbours(8,v, (int) Math.round(force1));
 			else
-				getNeighbours(v, (int) Math.round(force2));
+				getNeighbours(8,v, (int) Math.round(force2));
+		}
+
+	}
+	
+	public void makeMountains(double force1, double force2, ArrayList<Square> squares) {
+		if (force1 > 300) {
+			force1 = 500;
+		}
+		if (force2 > 300) {
+			force2 = 500;
+		}
+
+		if (force1 < 20) {
+			force1 = 20;
+		}
+		if (force2 < 20) {
+			force2 = 20;
+		}
+
+		// convert force to rating between 0 and 250 - for height map boundaries.
+		double oldRange = (500 - 20);
+		double newRange = (250 - 30);
+
+		force1 = ((force1 - 20) / oldRange) * newRange + 30;
+		force2 = ((force2 - 20) / oldRange) * newRange + 30;
+
+		// apply height changes to affected squares and near neighbours
+		for (Square v : squares) {
+
+			getNeighbours(4,v, (int) Math.round(force1));
 		}
 
 	}
 
-	public void getNeighbours(Square x, int force) {
+	public void getNeighbours(int times, Square x, int force) {
 
 		// get group of square involved
 		int g = x.getGroup();
 
-		for (int i = 1; i < 8; i++) {
+		for (int i = 1; i < times; i++) {
 			for (Square a : continents[g]) {
 				if (force < 5) {
 					return;

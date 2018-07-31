@@ -25,7 +25,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 	private JButton play;
 	private JButton pause;
 	private JButton ice;
-
+	
+	private boolean iceOnMap;
+	private boolean paused;
+	
 	private Graphics2D gr;
 	private Graphics2D g2d;
 
@@ -37,14 +40,15 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	public GlobeGUI(int size) {
 
-		stop = false;
+		
+		stop = true;
 		g = new Globe(size);
 
+		iceOnMap = true;
 		g.newNumbers(10, 10, 120, 75, 1);
-
 		g.newNumbers(100, 90, 75, 100, 2);
-
 		g.newNumbers(100, 190, 100, 50, 3);
+		
 		g.setVelocity(1, 4, 4);
 		
 		
@@ -58,6 +62,9 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 		plt = new PlayerTask();
 		layoutComponents();
+		paused = true;
+		plt.execute();
+		
 	}
 
 	// makes a whole new frame and everything atm - java garbage should handle it
@@ -65,6 +72,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 		gr = (Graphics2D) img.getGraphics();
 
+		if (iceOnMap == true) {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				int c = g.getHeightMap()[i][j];
@@ -89,6 +97,31 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		}
 
 		panel.repaint();
+		}
+		else {
+			
+			for (int i = 0; i < size; i++) {
+				for (int j = 0; j < size; j++) {
+					int c = g.getHeightMap()[i][j];
+					if (c < 0) {
+						gr.setColor(new Color(20, 20, 130));
+					}
+
+					else if (c > 0 && c < 175) {
+						gr.setColor(new Color(c, c + 70, c));
+					}
+
+					else {
+						gr.setColor(Color.GRAY);
+					}
+
+					gr.fillRect(i, j, 1, 1);
+				}
+			}
+
+			panel.repaint();
+			
+		}
 
 	}
 
@@ -164,23 +197,35 @@ public class GlobeGUI extends JFrame implements ActionListener {
 			redraw();
 
 		}
-		if (e.getSource() == play) {
-			stop = false;
+		if (e.getSource() == play) {	
+			paused = false;	
 			play.setEnabled(false);
-			plt.execute();
-
 		}
 
 		if (e.getSource() == pause) {
-			stop = true;
-			play.setEnabled(true);
-			plt.cancel(false);
+			paused = true;
+			play.setEnabled(true);			
+		}
+		
+		if (e.getSource() == ice) {
+			if (iceOnMap == true) {
+			iceOnMap = false;
+			redraw();
+		}
+			else {
+				iceOnMap = true;
+				redraw();
+			}
 		}
 	}
 
+	
+	
+	
 	private class PlayerTask extends SwingWorker<Void, Integer> {
 		protected Void doInBackground() {
-			while (!stop) {
+			while (true) {
+				if (paused == false) {
 				try {
 					Thread.sleep(250);
 				} catch (InterruptedException e) {
@@ -188,6 +233,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 					e.printStackTrace();
 				}
 				g.move();
+				
 				try {
 					Thread.sleep(250);
 				} catch (InterruptedException e) {
@@ -195,8 +241,9 @@ public class GlobeGUI extends JFrame implements ActionListener {
 					e.printStackTrace();
 				}
 				redraw();
+				}
 			}
-			return null;
+			
 
 		}
 
