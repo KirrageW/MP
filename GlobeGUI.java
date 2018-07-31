@@ -40,14 +40,14 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		stop = false;
 		g = new Globe(size);
 
-		g.newNumbers(10, 10, 100, 100, 1);
+		g.newNumbers(10, 10, 120, 75, 1);
 
-		g.newNumbers(100, 100, 120, 50, 2);
+		g.newNumbers(100, 90, 75, 100, 2);
 
 		g.newNumbers(100, 190, 100, 50, 3);
-		g.setVelocity(1, 3, 3);
-		g.setVelocity(2, -3, -3);
-		g.setVelocity(3, -1, 2);
+		g.setVelocity(1, 4, 4);
+		
+		
 
 		g.plotToHeightMap();
 		g.plotToGroupMap();
@@ -57,11 +57,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		plt = new PlayerTask();
-		plt.execute();
 		layoutComponents();
 	}
 
-	// makes a whole new frame and verything atm - java garbage should handle it
+	// makes a whole new frame and everything atm - java garbage should handle it
 	public void redraw() {
 		img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 		gr = (Graphics2D) img.getGraphics();
@@ -129,11 +128,11 @@ public class GlobeGUI extends JFrame implements ActionListener {
 				// smoothing
 				g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 				// Or _BICUBIC
-				g2d.scale(2, 2);
+				g2d.scale(3, 3);
 				g2d.drawImage(img, 0, 0, this);
 			}
 		};
-		panel.setPreferredSize(new Dimension(size * 2, size * 2));
+		panel.setPreferredSize(new Dimension(size * 3, size * 3));
 
 		panel2 = new JPanel();
 		advance = new JButton("Advance time");
