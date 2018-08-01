@@ -1,21 +1,29 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class Globe {
 
 	private int size;
-	protected Square[][] squares; // this is just a list. the 2d index has no bearing on the location of the square on the visual map	
-	private int[][] heightMap; // this is a map. the 2d array index is derived from the x and y coordinates of the squares
-	private int[][] groupMap; // this will be a 2d array map that can check for the presence of two Squares in the same place								
+	protected Square[][] squares; // this is just a list. the 2d index has no bearing on the location of the
+									// square on the visual map
+	private int[][] heightMap; // this is a map. the 2d array index is derived from the x and y coordinates of
+								// the squares
+	private int[][] groupMap; // this will be a 2d array map that can check for the presence of two Squares in
+								// the same place
 	private int[][] superGroupMap; // this will be a 2d array map that checks positions of superContinents
 
 	private ArrayList<Square>[] continents;
 	private int[] superContinentSize;
 	private int continentsCounter;
-	private ArrayList<Square> collisions; // temporary list to store squares involved in a collision. handy for mountain building in the right places, and possibly crust deletion
+	private ArrayList<Square> collisions; // temporary list to store squares involved in a collision. handy for mountain
+											// building in the right places, and possibly crust deletion
 	private int iceCover;
 
+	private int superCount; // number of supercontinents
+
 	public Globe(int size) {
+		
 		iceCover = 0;
 		continents = new ArrayList[10];
 		superContinentSize = new int[10];
@@ -32,16 +40,10 @@ public class Globe {
 			}
 		}
 
-		// new 2d array which will take coordinates from Squares, and store their height
 		setHeightMap(new int[size][size]);
-
-
-		// new 2d array which takes coordinates from Squares, and stores their group
 		groupMap = new int[size][size];
-	
-
 		superGroupMap = new int[size][size];
-	
+
 	}
 
 	// **********************************************************************************************************
@@ -57,8 +59,6 @@ public class Globe {
 		ArrayList<Square> cont = new ArrayList<Square>();
 
 		Random ran = new Random();
-		
-	
 
 		for (int i = 0; i < this.size; i++) {
 			for (int j = 0; j < this.size; j++) {
@@ -251,53 +251,60 @@ public class Globe {
 		// if so, find the one that joined the larger supergroup, change its superGroup
 		// ID back to its group ID
 		// inverse its direction to simulate a new divergent boundary.
-		if (possibility == 2) {
-			System.out.println("It's happening");
-			for (int i = 1; i < continentsCounter; i++) {
-				for (int j = 1; j < continentsCounter; j++) {
-					if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
-						if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
-							System.out.println("It's happening1");
-							if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
-								System.out.println("It's happening2");
-								if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
-									int randXspd = t.nextInt(4) - t.nextInt(4);
-									int randYspd = t.nextInt(4) - t.nextInt(4);
-									for (Square a : continents[i]) {
-										a.setSuperGroup(a.getGroup());
-										a.setXVel(randXspd);
-										a.setYVel(randYspd);
-									}
-								} else {
-									for (Square a : continents[i]) {
-										a.setSuperGroup(a.getGroup());
-										a.setXVel(-a.getXVel());
-										a.setYVel(-a.getYVel());
+		if (superCount > 0) { // is there even a supercontinent in existence?
+			if (possibility == 2) { // rare chance of new divergent boundary forming 
+				
+				// cycle through continents, find some that share supercontinent ID
+				for (int i = 1; i < continentsCounter; i++) {
+					for (int j = 1; j < continentsCounter; j++) {
+						if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
+							if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
+								
+								if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
+									
+									// if supercontinent is stationary, set random values of thrust
+									if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
+										int randXspd = t.nextInt(4) - t.nextInt(4);
+										int randYspd = t.nextInt(4) - t.nextInt(4);
+										for (Square a : continents[i]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(randXspd);
+											a.setYVel(randYspd);
+										}
+									} else {
+										// otherwise invert direction for nice divergence.
+										for (Square a : continents[i]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(-a.getXVel());
+											a.setYVel(-a.getYVel());
+
+										}
 
 									}
-
-								}
-							} else {
-								if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
-									int randXspd = t.nextInt(4) - t.nextInt(4);
-									int randYspd = t.nextInt(4) - t.nextInt(4);
-									for (Square a : continents[j]) {
-										a.setSuperGroup(a.getGroup());
-										a.setXVel(randXspd);
-										a.setYVel(randYspd);
-									}
 								} else {
-									System.out.println("It's happening3");
-									for (Square a : continents[j]) {
-										a.setSuperGroup(a.getGroup());
-										a.setXVel(-a.getXVel());
-										a.setYVel(-a.getYVel());
+									if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
+										int randXspd = t.nextInt(4) - t.nextInt(4);
+										int randYspd = t.nextInt(4) - t.nextInt(4);
+										for (Square a : continents[j]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(randXspd);
+											a.setYVel(randYspd);
+										}
+									} else {
+										
+										for (Square a : continents[j]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(-a.getXVel());
+											a.setYVel(-a.getYVel());
+										}
 									}
 								}
 							}
 						}
 					}
 				}
+				// count here as changed
+				getNumberOfSuperContinents();
 			}
 		}
 
@@ -470,6 +477,9 @@ public class Globe {
 					b.setYVel(totalY);
 					b.setSuperGroup(superContParent);
 				}
+
+				// count here as changed
+				getNumberOfSuperContinents();
 
 				// updates speeds of squares that are in this supercontinent now.
 				for (int i = 0; i < size; i++) {
@@ -762,7 +772,7 @@ public class Globe {
 		}
 	}
 
-	public void iceCover() {
+	public double iceCover() {
 		iceCover = 0;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -779,7 +789,8 @@ public class Globe {
 
 		// roughly taking 1% cover of ice above the water level, of total world surface,
 		// to translate to globally 10m of sea level.
-		System.err.println("Sea level change = -" + icePerCent * 10 + "m");
+		return icePerCent * 10;
+		//System.err.println("Sea level change = -" + icePerCent * 10 + "m");
 	}
 
 	public int[][] getHeightMap() {
@@ -796,6 +807,25 @@ public class Globe {
 
 	public int getSize() {
 		return size;
+	}
+
+	public void getNumberOfSuperContinents() {
+		HashSet supers = new HashSet();
+
+		for (int i = 1; i < continentsCounter; i++) {
+			for (int j = 1; j < continentsCounter; j++) {
+				if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
+					if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
+						supers.add(continents[i].get(0).getSuperGroup());
+					}
+				}
+			}
+		}
+		superCount = supers.size();
+	}
+
+	public int getSuperCount() {
+		return superCount;
 	}
 
 }
