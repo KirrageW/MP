@@ -3,30 +3,20 @@ import java.util.Random;
 
 public class Globe {
 
-	protected Square[][] squares; // this is just a list. the 2d index has no bearing on the location of the
-									// square. each square maintains its own x and y position
 	private int size;
-	private int[][] heightMap; // this is a map. the 2d array index is derived from the x and y coordinates of
-								// the squares
-
-	private int[][] groupMap; // this will be a 2d array map that can check for the presence of two Squares in
-								// the same place
-
+	protected Square[][] squares; // this is just a list. the 2d index has no bearing on the location of the square on the visual map	
+	private int[][] heightMap; // this is a map. the 2d array index is derived from the x and y coordinates of the squares
+	private int[][] groupMap; // this will be a 2d array map that can check for the presence of two Squares in the same place								
 	private int[][] superGroupMap; // this will be a 2d array map that checks positions of superContinents
 
 	private ArrayList<Square>[] continents;
-
 	private int[] superContinentSize;
-
 	private int continentsCounter;
-	private ArrayList<Square> collisions;
-
-	private boolean stop;
+	private ArrayList<Square> collisions; // temporary list to store squares involved in a collision. handy for mountain building in the right places, and possibly crust deletion
 	private int iceCover;
 
 	public Globe(int size) {
 		iceCover = 0;
-		stop = true;
 		continents = new ArrayList[10];
 		superContinentSize = new int[10];
 		continentsCounter = 1;
@@ -45,40 +35,19 @@ public class Globe {
 		// new 2d array which will take coordinates from Squares, and store their height
 		setHeightMap(new int[size][size]);
 
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				getHeightMap()[i][j] = -1;
-			}
-		}
 
 		// new 2d array which takes coordinates from Squares, and stores their group
 		groupMap = new int[size][size];
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				groupMap[i][j] = -1;
-			}
-		}
+	
 
 		superGroupMap = new int[size][size];
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				superGroupMap[i][j] = -1;
-			}
-		}
+	
 	}
 
 	// **********************************************************************************************************
 	// TO DO:
 
-	// refactor all of it - squares and stuff
-
 	// add GUI stuff
-
-	// sea level
-
-	// mountain formation on leading edge through sea space?
-
-	// ron's maths
 
 	// Junit tests: when superocntinents combine - new masses
 	// conservation of energies
@@ -88,6 +57,8 @@ public class Globe {
 		ArrayList<Square> cont = new ArrayList<Square>();
 
 		Random ran = new Random();
+		
+	
 
 		for (int i = 0; i < this.size; i++) {
 			for (int j = 0; j < this.size; j++) {
@@ -109,17 +80,16 @@ public class Globe {
 		}
 
 		// you need more or fewer of these, depending on size of grid.
-
-		closer();
-		closer();
-		closer1();
-		closer1();
+		closer(1);
+		closer(1);
+		closer(2);
+		closer(2);
 		focus();
-		closer1();
-		focus();
+		closer(2);
 		focus();
 		focus();
-		closer();
+		focus();
+		closer(1);
 
 		for (int i = 0; i < this.size; i++) {
 			for (int j = 0; j < this.size; j++) {
@@ -136,11 +106,8 @@ public class Globe {
 			}
 		}
 
-		System.out.println("size of superCon1 :" + superContinentSize[continentsCounter] + ", for group " + group);
-
 		continents[continentsCounter] = cont;
 		continentsCounter++;
-
 	}
 
 	public int getNeighbours(int i, int j) {
@@ -176,7 +143,8 @@ public class Globe {
 
 	}
 
-	public void closer() {
+	// degree param represents immediate neighbours (1) or next neighbours (2)
+	public void closer(int degree) {
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -184,28 +152,28 @@ public class Globe {
 				int req = 3;
 				if (groupMap[i][j] > 0) {
 
-					if (groupMap[i - 1][j - 1] > 0) {
+					if (groupMap[i - degree][j - degree] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i][j - 1] > 0) {
+					if (groupMap[i][j - degree] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i + 1][j - 1] > 0) {
+					if (groupMap[i + degree][j - degree] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i + 1][j] > 0) {
+					if (groupMap[i + degree][j] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i + 1][j + 1] > 0) {
+					if (groupMap[i + degree][j + degree] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i][j + 1] > 0) {
+					if (groupMap[i][j + degree] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i - 1][j + 1] > 0) {
+					if (groupMap[i - degree][j + degree] > 0) {
 						numberOfNeighbours++;
 					}
-					if (groupMap[i - 1][j] > 0) {
+					if (groupMap[i - degree][j] > 0) {
 						numberOfNeighbours++;
 					}
 
@@ -263,51 +231,6 @@ public class Globe {
 
 	}
 
-	public void closer1() {
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				int numberOfNeighbours = 0;
-				int req = 3;
-				if (groupMap[i][j] > 0) {
-
-					if (groupMap[i - 2][j - 2] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i][j - 2] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + 2][j - 2] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + 2][j] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + 2][j + 2] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i][j + 2] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i - 2][j + 2] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i - 2][j] > 0) {
-						numberOfNeighbours++;
-					}
-
-					// whittle
-					if (numberOfNeighbours <= req) {
-						groupMap[i][j] = 0;
-
-					}
-				}
-
-			}
-		}
-
-	}
-
 	// sets velocities of all members of chosen group CHANGE TO USE CONTINENTS
 	public void setVelocity(int group, int xVel, int yVel) {
 		for (int i = 0; i < size; i++) {
@@ -322,16 +245,6 @@ public class Globe {
 
 	public void move() {
 
-		System.out.println("Continent 1 id : "+ continents[1].get(0).getGroup() + "Continent 1 supID : "+continents[1].get(0).getSuperGroup()
-				+ "Continent 2 id: "+continents[2
-				                                ].get(0)
-				.getGroup()
-				+ "continent 2 supID: "+ continents[2].get(0).getSuperGroup());
-		// ADD IN RANDOM CHANCE OF SUPERCONTINENTS BREAKING UP.
-
-		// if two continents share the same supercontinent ID, give them a chance at
-		// breaking apart.
-
 		Random t = new Random();
 		int possibility = t.nextInt(15); // increase number to control rarity of new boundary formation
 		// basically - do any continents share the same supergroup ID?
@@ -343,45 +256,45 @@ public class Globe {
 			for (int i = 1; i < continentsCounter; i++) {
 				for (int j = 1; j < continentsCounter; j++) {
 					if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
-					if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
-						System.out.println("It's happening1");
-						if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
-							System.out.println("It's happening2");
-							if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
-								int randXspd = t.nextInt(4) - t.nextInt(4);
-								int randYspd = t.nextInt(4) - t.nextInt(4);
-								for (Square a : continents[i]) {
-									a.setSuperGroup(a.getGroup());
-									a.setXVel(randXspd);
-									a.setYVel(randYspd);
+						if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
+							System.out.println("It's happening1");
+							if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
+								System.out.println("It's happening2");
+								if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
+									int randXspd = t.nextInt(4) - t.nextInt(4);
+									int randYspd = t.nextInt(4) - t.nextInt(4);
+									for (Square a : continents[i]) {
+										a.setSuperGroup(a.getGroup());
+										a.setXVel(randXspd);
+										a.setYVel(randYspd);
+									}
+								} else {
+									for (Square a : continents[i]) {
+										a.setSuperGroup(a.getGroup());
+										a.setXVel(-a.getXVel());
+										a.setYVel(-a.getYVel());
+
+									}
+
 								}
 							} else {
-								for (Square a : continents[i]) {
-									a.setSuperGroup(a.getGroup());
-									a.setXVel(-a.getXVel());
-									a.setYVel(-a.getYVel());
-									
-								}
-								
-							}
-						}else {
-							if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
-								int randXspd = t.nextInt(4) - t.nextInt(4);
-								int randYspd = t.nextInt(4) - t.nextInt(4);
-								for (Square a : continents[j]) {
-									a.setSuperGroup(a.getGroup());
-									a.setXVel(randXspd);
-									a.setYVel(randYspd);
-								}
-							} else {
-								System.out.println("It's happening3");
-								for (Square a : continents[j]) {
-									a.setSuperGroup(a.getGroup());
-									a.setXVel(-a.getXVel());
-									a.setYVel(-a.getYVel());
+								if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
+									int randXspd = t.nextInt(4) - t.nextInt(4);
+									int randYspd = t.nextInt(4) - t.nextInt(4);
+									for (Square a : continents[j]) {
+										a.setSuperGroup(a.getGroup());
+										a.setXVel(randXspd);
+										a.setYVel(randYspd);
+									}
+								} else {
+									System.out.println("It's happening3");
+									for (Square a : continents[j]) {
+										a.setSuperGroup(a.getGroup());
+										a.setXVel(-a.getXVel());
+										a.setYVel(-a.getYVel());
+									}
 								}
 							}
-						}
 						}
 					}
 				}
@@ -436,9 +349,6 @@ public class Globe {
 								// amass a list of overlapped squares FIRST
 								collisions.add(squares[i][j]);
 								collisions.add(getSquare(h, k, groupNumber)); // on the other continent
-
-								// IF NUMBER IN COLLISIONS IS ABOVE PROPORTION IN CONTINENTS, THEN COMBINE
-								// CONTINENTS
 							}
 						}
 					}
@@ -561,6 +471,7 @@ public class Globe {
 					b.setSuperGroup(superContParent);
 				}
 
+				// updates speeds of squares that are in this supercontinent now.
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
 						if (squares[i][j].getGroup() == superContParent) {
@@ -586,9 +497,6 @@ public class Globe {
 
 			else {
 
-				
-				
-
 			}
 
 			// re-check for boundary crossings again
@@ -597,24 +505,25 @@ public class Globe {
 
 		// carry on...
 		ArrayList<Square> edges = new ArrayList<Square>();
-		
+
 		// make mountains on leading edge
-		for (int i = 0; i < size; i ++) {
-			for (int j = 0; j < size; j ++) {
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
 				if (squares[i][j].getHeight() > 0) {
 					// if new location is ocean, must be on leading edge
-					if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY() + (squares[i][j].getYVel())] < 0) {
+					if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+							+ (squares[i][j].getYVel())] == 0) {
 						// no reduction in speed, because it is being driven by convection current
 						edges.add(squares[i][j]);
-						
+
 					}
 				}
 			}
 		}
 		// how much force, not much
-		
-		makeMountains(50,50, edges);
-		
+
+		makeMountains(50, 50, edges);
+
 		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -626,49 +535,35 @@ public class Globe {
 		}
 
 		// threads that all join before ending the move method?
-		plotToHeightMap();
-		plotToGroupMap();
-		plotToSuperGroupMap();
+		plotMaps();
 		iceCover();
 		// erosion(); is broken
 	}
 
 	public void checkBoundaries() {
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
 
-				if (squares[i][j].getX() + squares[i][j].getXVel() >= size) {
-					// find the amount it's gone over the limit, don't just set to 0
-					int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
-					squares[i][j].setX(amountOver);
-				} else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
-					int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
-					squares[i][j].setY(amountOver);
-				} else if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
-					// find the amount it's gone under 0, set to size - that
-					int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
-					squares[i][j].setX(amountUnder);
-				} else if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
-					int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
-					squares[i][j].setY(amountUnder);
-				}
+		// repeat twice, as corners take squares over both horizontal and vertical
+		// boundaries
+		for (int times = 0; times < 2; times++) {
+			for (int i = 0; i < size; i++) {
+				for (int j = 0; j < size; j++) {
 
-				// repeat again as it could have gone above or below for the X AND the Y
-				// coordinate, at a corner
-				if (squares[i][j].getX() + squares[i][j].getXVel() >= size) {
-					// find the amount it's gone over the limit, don't just set to 0
-					int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
-					squares[i][j].setX(amountOver);
-				} else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
-					int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
-					squares[i][j].setY(amountOver);
-				} else if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
-					// find the amount it's gone under 0, set to size - that
-					int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
-					squares[i][j].setX(amountUnder);
-				} else if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
-					int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
-					squares[i][j].setY(amountUnder);
+					if (squares[i][j].getX() + squares[i][j].getXVel() >= size) {
+						// find the amount it's gone over the limit, don't just set to 0
+						int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
+						squares[i][j].setX(amountOver);
+					} else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
+						int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
+						squares[i][j].setY(amountOver);
+					} else if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
+						// find the amount it's gone under 0, set to size - that
+						int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
+						squares[i][j].setX(amountUnder);
+					} else if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
+						int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
+						squares[i][j].setY(amountUnder);
+					}
+
 				}
 			}
 		}
@@ -700,13 +595,13 @@ public class Globe {
 		for (Square v : squares) {
 
 			if (v.getGroup() == g1)
-				getNeighbours(8,v, (int) Math.round(force1));
+				getNeighbours(8, v, (int) Math.round(force1));
 			else
-				getNeighbours(8,v, (int) Math.round(force2));
+				getNeighbours(8, v, (int) Math.round(force2));
 		}
 
 	}
-	
+
 	public void makeMountains(double force1, double force2, ArrayList<Square> squares) {
 		if (force1 > 300) {
 			force1 = 500;
@@ -732,7 +627,7 @@ public class Globe {
 		// apply height changes to affected squares and near neighbours
 		for (Square v : squares) {
 
-			getNeighbours(4,v, (int) Math.round(force1));
+			getNeighbours(4, v, (int) Math.round(force1));
 		}
 
 	}
@@ -797,58 +692,21 @@ public class Globe {
 		}
 	}
 
-	// run through all the Squares, getting their X and Y coordinates for 2d height
-	// array
-	public void plotToHeightMap() {
+	// run through all the Squares, getting their X and Y coordinates
+	public void plotMaps() {
 
 		// reset height map - overwrites old positions
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				heightMap[i][j] = -1;
-
-			}
-		}
+		heightMap = new int[size][size];
+		groupMap = new int[size][size];
+		superGroupMap = new int[size][size];
 
 		// translate Squares X and Y integers to the heightmap 2d array index - giving
 		// coordinates.
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight(); // error here
-			}
-		}
-	}
-
-	public void plotToGroupMap() {
-
-		// reset group map - overwrites old positions
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				groupMap[i][j] = -1;
-
-			}
-		}
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				groupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getGroup(); // index out of bounds
-			}
-		}
-	}
-
-	public void plotToSuperGroupMap() {
-
-		// reset group map - overwrites old positions
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				superGroupMap[i][j] = -1;
-
-			}
-		}
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				superGroupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getSuperGroup(); // index out
-																											// of bounds
+				heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight();
+				groupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getGroup();
+				superGroupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getSuperGroup();
 			}
 		}
 	}
@@ -904,7 +762,6 @@ public class Globe {
 		}
 	}
 
-	// wrong sides
 	public void iceCover() {
 		iceCover = 0;
 		for (int i = 0; i < size; i++) {
@@ -934,7 +791,6 @@ public class Globe {
 	}
 
 	public int[][] getGroupMap() {
-		// TODO Auto-generated method stub
 		return groupMap;
 	}
 
