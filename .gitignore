@@ -15,3 +15,9 @@
 /HeightMapPlotter.class
 /PlayerTask.class
 /Launcher.class
+/Generator.class
+/Mover.class
+/CollisionModule.class
+/GeneratorModule.class
+/CollisionGrazing.class
+/CollisionMajor.class

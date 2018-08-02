@@ -91,22 +91,22 @@ public class GlobeGUI extends JFrame implements ActionListener {
 	public void generate(int number) {
 
 		if (number == 3) {
-			g.newNumbers(10, 10, 120, 75, 1);
-			g.newNumbers(100, 90, 75, 100, 2);
-			g.newNumbers(100, 190, 100, 50, 3);
+			g.generate(10, 10, 120, 75, 1);
+			g.generate(100, 90, 75, 100, 2);
+			g.generate(100, 190, 100, 50, 3);
 
 		}
 		if (number == 2) {
 
-			g.newNumbers(10, 10, 160, 85, 1);
-			g.newNumbers(100, 90, 100, 150, 2);
+			g.generate(10, 10, 160, 85, 1);
+			g.generate(100, 90, 100, 150, 2);
 		}
 
 		if (number == 4) {
-			g.newNumbers(10, 10, 120, 75, 1);
-			g.newNumbers(100, 90, 75, 100, 2);
-			g.newNumbers(100, 190, 100, 50, 3);
-			g.newNumbers(10, 190, 100, 50, 4);
+			g.generate(10, 10, 120, 75, 1);
+			g.generate(100, 90, 75, 100, 2);
+			g.generate(100, 190, 100, 50, 3);
+			g.generate(10, 190, 100, 50, 4);
 		}
 
 		for (int i = 1; i <= number; i++) {
@@ -239,7 +239,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 		noContinents = new JLabel("Continents:");
 		noSuperContinents = new JLabel("Super Continents:");
-		seaChange = new JLabel("Change in sea level:");
+		seaChange = new JLabel("Change in sea level (m):");
 		averageHeight = new JLabel("Average height of continents:");
 		noContinentsF = new JTextField(10);
 		noSuperContinentsF = new JTextField(10);
@@ -288,10 +288,11 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 		// panel4 for entire rightside parent panel
 		panel4 = new JPanel();
-		panel4.setLayout(new BorderLayout());
-		panel4.add(panel5, BorderLayout.NORTH);
-		panel4.add(panel3, BorderLayout.SOUTH);
-		panel4.add(panel2, BorderLayout.CENTER);
+		panel4.setLayout(new GridLayout(5,1));
+		panel4.add(panel5);
+		panel4.add(panel2);
+		panel4.add(panel3);
+		
 
 		this.add(panel4, BorderLayout.EAST);
 		// this.add(panel2, BorderLayout.SOUTH);

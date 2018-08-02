@@ -112,6 +112,10 @@ public class Square {
 		return this.superGroup;
 	}
 	
+	// do requirements a bit
+	// then do tests
+	// research stragetgies - might i do a harness , to test stuff without GUI, and THEN test GUI requirements specifically...
+	// go eat and relax first
 	
 	
 

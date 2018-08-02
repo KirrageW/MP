@@ -23,7 +23,7 @@ public class Globe {
 	private int superCount; // number of supercontinents
 
 	public Globe(int size) {
-		
+
 		iceCover = 0;
 		continents = new ArrayList[10];
 		superContinentSize = new int[10];
@@ -39,57 +39,21 @@ public class Globe {
 				squares[i][j] = new Square(-1);
 			}
 		}
-
+		
 		setHeightMap(new int[size][size]);
 		groupMap = new int[size][size];
 		superGroupMap = new int[size][size];
-
 	}
 
-	// **********************************************************************************************************
-	// TO DO:
+	public void generate(int x, int y, int sizeX, int sizeY, int group) {
 
-	// add GUI stuff
+		// modular continent generator - it just needs to output an int[][] with 1 set
+		// as land and 0 as sea.
+		GeneratorModule generator = new GeneratorModule(size);
+		generator.newNumbers(x, y, sizeX, sizeY, group);
+		this.groupMap = generator.getMapping();
 
-	// Junit tests: when superocntinents combine - new masses
-	// conservation of energies
-	// **********************************************************************************************************
-
-	public void newNumbers(int x, int y, int size, int sizeY, int group) {
 		ArrayList<Square> cont = new ArrayList<Square>();
-
-		Random ran = new Random();
-
-		for (int i = 0; i < this.size; i++) {
-			for (int j = 0; j < this.size; j++) {
-				groupMap[i][j] = 0;
-			}
-		}
-
-		for (int i = x + 5; i < x + size - 5; i++) {
-			for (int j = y + 5; j < y + sizeY - 5; j++) {
-				int number = ran.nextInt(4);
-				groupMap[i][j] = number;
-			}
-		}
-
-		for (int i = x + 5; i < x + size; i++) {
-			for (int j = y + 5; j < y + sizeY; j++) {
-				groupMap[i][j] = getNeighbours(i, j);
-			}
-		}
-
-		// you need more or fewer of these, depending on size of grid.
-		closer(1);
-		closer(1);
-		closer(2);
-		closer(2);
-		focus();
-		closer(2);
-		focus();
-		focus();
-		focus();
-		closer(1);
 
 		for (int i = 0; i < this.size; i++) {
 			for (int j = 0; j < this.size; j++) {
@@ -108,127 +72,6 @@ public class Globe {
 
 		continents[continentsCounter] = cont;
 		continentsCounter++;
-	}
-
-	public int getNeighbours(int i, int j) {
-
-		int a = groupMap[i - 1][j - 1];
-		int b = groupMap[i][j - 1];
-		int c = groupMap[i + 1][j - 1];
-		int d = groupMap[i + 1][j];
-		int e = groupMap[i + 1][j + 1];
-		int f = groupMap[i][j + 1];
-		int g = groupMap[i - 1][j + 1];
-		int h = groupMap[i - 1][j];
-
-		int k = groupMap[i - 2][j - 2];
-		int l = groupMap[i][j - 2];
-		int m = groupMap[i + 2][j - 2];
-		int n = groupMap[i + 2][j];
-		int o = groupMap[i + 2][j + 2];
-		int p = groupMap[i][j + 2];
-		int q = groupMap[i - 2][j + 2];
-		int r = groupMap[i - 2][j];
-
-		int s = groupMap[i - 3][j - 3];
-		int t = groupMap[i][j - 3];
-		int u = groupMap[i + 3][j - 3];
-		int v = groupMap[i + 3][j];
-		int w = groupMap[i + 3][j + 3];
-		int x = groupMap[i][j + 3];
-		int y = groupMap[i - 3][j + 3];
-		int z = groupMap[i - 3][j];
-
-		return (a + b + c + d + e + f + g + h + k + l + m + n + o + p + q + r + s + t + u + v + w + x + y + z) / 24;
-
-	}
-
-	// degree param represents immediate neighbours (1) or next neighbours (2)
-	public void closer(int degree) {
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				int numberOfNeighbours = 0;
-				int req = 3;
-				if (groupMap[i][j] > 0) {
-
-					if (groupMap[i - degree][j - degree] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i][j - degree] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + degree][j - degree] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + degree][j] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + degree][j + degree] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i][j + degree] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i - degree][j + degree] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i - degree][j] > 0) {
-						numberOfNeighbours++;
-					}
-
-					// whittle
-					if (numberOfNeighbours <= req) {
-						groupMap[i][j] = 0;
-
-					}
-				}
-
-			}
-		}
-
-	}
-
-	// gets rid of lakes
-	public void focus() {
-		for (int i = 1; i < size - 1; i++) {
-			for (int j = 1; j < size - 1; j++) {
-				int numberOfNeighbours = 0;
-				int req = 3;
-				if (groupMap[i][j] == 0) {
-					if (groupMap[i - 1][j - 1] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i][j - 1] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + 1][j - 1] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + 1][j] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i + 1][j + 1] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i][j + 1] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i - 1][j + 1] > 0) {
-						numberOfNeighbours++;
-					}
-					if (groupMap[i - 1][j] > 0) {
-						numberOfNeighbours++;
-					}
-
-					if (numberOfNeighbours > req) {
-						groupMap[i][j] = 1;
-
-					}
-				}
-			}
-		}
-
 	}
 
 	// sets velocities of all members of chosen group CHANGE TO USE CONTINENTS
@@ -252,16 +95,16 @@ public class Globe {
 		// ID back to its group ID
 		// inverse its direction to simulate a new divergent boundary.
 		if (superCount > 0) { // is there even a supercontinent in existence?
-			if (possibility == 2) { // rare chance of new divergent boundary forming 
-				
+			if (possibility == 2) { // rare chance of new divergent boundary forming
+
 				// cycle through continents, find some that share supercontinent ID
 				for (int i = 1; i < continentsCounter; i++) {
 					for (int j = 1; j < continentsCounter; j++) {
 						if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
 							if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
-								
+
 								if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
-									
+
 									// if supercontinent is stationary, set random values of thrust
 									if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
 										int randXspd = t.nextInt(4) - t.nextInt(4);
@@ -291,7 +134,7 @@ public class Globe {
 											a.setYVel(randYspd);
 										}
 									} else {
-										
+
 										for (Square a : continents[j]) {
 											a.setSuperGroup(a.getGroup());
 											a.setXVel(-a.getXVel());
@@ -375,49 +218,31 @@ public class Globe {
 			int mass1 = continents[g1].size();
 			int mass2 = continents[g2].size();
 
-			// MOMENTUM SPREAD AMOUNG NUMBER IN COLLISIONS... p = mv.
-			// calculate total momentum of plates
+			// get the velocities
 			double speedXfirst = continents[g1].get(0).getXVel();
 			double speedYfirst = continents[g1].get(0).getYVel();
 			double speedXsecond = continents[g2].get(0).getXVel();
 			double speedYsecond = continents[g2].get(0).getYVel();
 
-			double velocity1 = Math.sqrt((speedXfirst * speedXfirst) + (speedYfirst * speedYfirst));
-			double velocity2 = Math.sqrt((speedXsecond * speedXsecond) + (speedYsecond * speedYsecond));
+			////////////////////////// collision mathematics can be swapped here
+			////////////////////////// ////////////////////////////////////////////////////////////////
 
-			double force1 = velocity1 * mass1;
-			double force2 = velocity2 * mass2;
-
-			// mountain formation coefficient - proportion of force used in mountain
-			// building
-			double mountainCoefficient = 0.25;
-
-			force1 = force1 * 0.25;
-			force2 = force2 * 0.25;
-
-			makeMountains(force1, force2, g1, collisions);
-
-			// need to slow down the continents a little, but not change their directions at
-			// all...
-
-			// speed coefficient - what proportion of this energy is NOT lost to mountain
-			// formation?
-			double energyCoefficient = 1 - mountainCoefficient;
-
-			double minorCollisionAx = energyCoefficient * speedXfirst;
-			double minorCollisionAy = energyCoefficient * speedYfirst;
-			double minorCollisionBx = energyCoefficient * speedXsecond;
-			double minorCollisionBy = energyCoefficient * speedYsecond;
+			CollisionGrazing minorCollision = new CollisionGrazing(mass1, mass2, speedXfirst, speedYfirst, speedXsecond,
+					speedYsecond);
 
 			for (Square a : continents[g1]) {
-				a.setXVel(minorCollisionAx);
-				a.setYVel(minorCollisionAy);
+				a.setXVel(minorCollision.getNewXSpeed1());
+				a.setYVel(minorCollision.getNewYSpeed1());
 			}
 
 			for (Square b : continents[g2]) {
-				b.setXVel(minorCollisionBx);
-				b.setYVel(minorCollisionBy);
+				b.setXVel(minorCollision.getNewXSpeed2());
+				b.setYVel(minorCollision.getNewYSpeed2());
 			}
+
+			makeMountains(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions);
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			double proportion = (double) collisions.size()
 					/ ((double) continents[g1].size() + (double) continents[g2].size());
@@ -425,27 +250,15 @@ public class Globe {
 			// should they combine? - if amount of continent collided (overlapped) is
 			// greater than 10% of total continent, yes
 			// MAJOR COLLISION
-			if (proportion > 0.10) {
+			if (proportion > 0.05) {
 
-				double Ax = mass1 * speedXfirst;
-				double Ay = mass1 * speedYfirst;
-				double Bx = mass2 * speedXsecond;
-				double By = mass2 * speedYsecond;
+				////////////////////////// collision mathematics can be swapped here
+				////////////////////////// ////////////////////////////////////////////////////////////////
+				CollisionMajor majorCollision = new CollisionMajor(mass1, mass2, speedXfirst, speedYfirst, speedXsecond,
+						speedYsecond);
+				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				// total mass
-				double totalX = Ax + Bx;
-				double totalY = Ay + By;
-
-				totalX = totalX / (mass1 + mass2);
-				totalY = totalY / (mass1 + mass2);
-
-				// inelastic coefficient - what proportion of this energy is lost to mountain
-				// formation?
-				energyCoefficient = 0.5; // more mountain building, more speed loss
-
-				totalX = totalX * energyCoefficient;
-				totalY = totalY * energyCoefficient;
-
+				// supercontinent handling
 				int sg1 = continents[g1].get(0).getSuperGroup();
 				int sg2 = continents[g2].get(0).getSuperGroup();
 
@@ -453,12 +266,7 @@ public class Globe {
 				int superContParent = 0;
 				if (superContinentSize[sg1] >= superContinentSize[sg2]) {
 					superContParent = sg1;
-					superContinentSize[superContParent] = superContinentSize[superContParent] + superContinentSize[sg2]; // add
-																															// smaller
-																															// to
-																															// larger
-																															// one
-
+					superContinentSize[superContParent] = superContinentSize[superContParent] + superContinentSize[sg2];
 				} else {
 					superContParent = sg2;
 					superContinentSize[superContParent] = superContinentSize[superContParent] + superContinentSize[sg1];
@@ -467,14 +275,14 @@ public class Globe {
 				// so supercontinent ID is assigned as the bigger supercontinent ( remains same
 				// if already is bigger supercontinent)
 				for (Square a : continents[g1]) {
-					a.setXVel(totalX);
-					a.setYVel(totalY);
+					a.setXVel(majorCollision.getTotalX());
+					a.setYVel(majorCollision.getTotalY());
 					a.setSuperGroup(superContParent);
 				}
 
 				for (Square b : continents[g2]) {
-					b.setXVel(totalX);
-					b.setYVel(totalY);
+					b.setXVel(majorCollision.getTotalX());
+					b.setYVel(majorCollision.getTotalY());
 					b.setSuperGroup(superContParent);
 				}
 
@@ -485,23 +293,15 @@ public class Globe {
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
 						if (squares[i][j].getGroup() == superContParent) {
-							squares[i][j].setXVel(totalX);
-							squares[i][j].setYVel(totalY);
+							squares[i][j].setXVel(majorCollision.getTotalX());
+							squares[i][j].setYVel(majorCollision.getTotalX());
 						}
 					}
 				}
 
-				force1 = velocity1 * mass1;
-				force2 = velocity2 * mass2;
+				makeMountains(majorCollision.getForce1(), majorCollision.getForce2(), g1, collisions);
 
-				// mountain formation coefficient - proportion of force used in mountain
-				// building - all energy makes mountains
-				mountainCoefficient = 1.00;
-
-				force1 = force1 * mountainCoefficient;
-				force2 = force2 * mountainCoefficient;
-
-				makeMountains(force1, force2, g1, collisions);
+				//////////////////////////////////////////////////////////////////////////////////////////////////
 
 			}
 
@@ -604,10 +404,11 @@ public class Globe {
 		// apply height changes to affected squares and near neighbours
 		for (Square v : squares) {
 
+			System.out.println(v.getGroup());
 			if (v.getGroup() == g1)
-				getNeighbours(8, v, (int) Math.round(force1));
+				getNeighbours(5, v, (int) Math.round(force1));
 			else
-				getNeighbours(8, v, (int) Math.round(force2));
+				getNeighbours(5, v, (int) Math.round(force1));
 		}
 
 	}
@@ -636,6 +437,7 @@ public class Globe {
 
 		// apply height changes to affected squares and near neighbours
 		for (Square v : squares) {
+			
 
 			getNeighbours(4, v, (int) Math.round(force1));
 		}
@@ -790,7 +592,7 @@ public class Globe {
 		// roughly taking 1% cover of ice above the water level, of total world surface,
 		// to translate to globally 10m of sea level.
 		return icePerCent * 10;
-		//System.err.println("Sea level change = -" + icePerCent * 10 + "m");
+		// System.err.println("Sea level change = -" + icePerCent * 10 + "m");
 	}
 
 	public int[][] getHeightMap() {
