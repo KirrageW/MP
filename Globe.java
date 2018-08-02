@@ -310,9 +310,10 @@ public class Globe {
 			}
 
 			// re-check for boundary crossings again
-			checkBoundaries();
+			
 		}
 
+		checkBoundaries();
 		// carry on...
 		ArrayList<Square> edges = new ArrayList<Square>();
 
@@ -332,7 +333,7 @@ public class Globe {
 		}
 		// how much force, not much
 
-		makeMountains(50, 50, edges);
+		makeMountains(20, 20, edges);
 
 		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
@@ -362,14 +363,14 @@ public class Globe {
 						// find the amount it's gone over the limit, don't just set to 0
 						int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
 						squares[i][j].setX(amountOver);
-					} else if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
+					}  if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
 						int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
 						squares[i][j].setY(amountOver);
-					} else if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
+					} if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
 						// find the amount it's gone under 0, set to size - that
 						int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
 						squares[i][j].setX(amountUnder);
-					} else if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
+					} if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
 						int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
 						squares[i][j].setY(amountUnder);
 					}
@@ -402,14 +403,14 @@ public class Globe {
 		force2 = ((force2 - 20) / oldRange) * newRange + 30;
 
 		// apply height changes to affected squares and near neighbours
-		for (Square v : squares) {
+		/*for (Square v : squares) {
 
-			System.out.println(v.getGroup());
+			
 			if (v.getGroup() == g1)
-				getNeighbours(5, v, (int) Math.round(force1));
+				getNeighbours(4, v, (int) Math.round(force1));
 			else
-				getNeighbours(5, v, (int) Math.round(force1));
-		}
+				getNeighbours(4, v, (int) Math.round(force1));
+		}*/
 
 	}
 
@@ -439,18 +440,20 @@ public class Globe {
 		for (Square v : squares) {
 			
 
-			getNeighbours(4, v, (int) Math.round(force1));
+			//getNeighbours(2, v, (int) Math.round(force1));
 		}
 
 	}
+	
+	
 
 	public void getNeighbours(int times, Square x, int force) {
 
 		// get group of square involved
 		int g = x.getGroup();
-
 		for (int i = 1; i < times; i++) {
 			for (Square a : continents[g]) {
+				
 				if (force < 5) {
 					return;
 				}
@@ -501,6 +504,10 @@ public class Globe {
 				}
 
 			}
+		}
+		
+		for (Square a : continents[g]) {
+			a.setChecked(false);
 		}
 	}
 
