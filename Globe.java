@@ -146,7 +146,13 @@ public class Globe {
 				b.setYVel(minorCollision.getNewYSpeed2());
 			}
 
-			makeMountains(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions);
+			
+			MountainFormation makeMountains = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions, continents[g1], false);
+			continents[g1] = makeMountains.getDeformedContinent();
+			MountainFormation makeMountains2 = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g2, collisions, continents[g2], false);
+			continents[g2] = makeMountains2.getDeformedContinent();
+			
+			//makeMountains(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions);
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,10 +212,13 @@ public class Globe {
 						}
 					}
 				}
-
-				makeMountains(majorCollision.getForce1(), majorCollision.getForce2(), g1, collisions);
 				
-		
+				///////mountain formation modules used here. Can be swapped.
+
+				makeMountains = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions, continents[g1], false);
+				continents[g1] = makeMountains.getDeformedContinent();
+				makeMountains2 = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g2, collisions, continents[g2], false);
+				continents[g2] = makeMountains2.getDeformedContinent();
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -243,7 +252,8 @@ public class Globe {
 		}
 		// how much force, not much
 
-		makeMountains(20, 20, edges);
+		MountainFormation makeMountains = new MountainFormation(20, 20, g1, edges, true);
+		edges = makeMountains.getDeformedContinent();
 
 		// move here. check for boundaries and handle accordingly
 		for (int i = 0; i < size; i++) {
@@ -258,7 +268,7 @@ public class Globe {
 		// threads that all join before ending the move method?
 		plotMaps();
 		iceCover();
-		// erosion(); is broken
+		// erosion(); 
 	}
 
 	public void checkBoundaries() {
@@ -426,133 +436,7 @@ public class Globe {
 		}
 	}
 
-	public void makeMountains(double force1, double force2, int g1, ArrayList<Square> squares) {
-		if (force1 > 300) {
-			force1 = 500;
-		}
-		if (force2 > 300) {
-			force2 = 500;
-		}
-
-		if (force1 < 20) {
-			force1 = 20;
-		}
-		if (force2 < 20) {
-			force2 = 20;
-		}
-
-		// convert force to rating between 0 and 250 - for height map boundaries.
-		double oldRange = (500 - 20);
-		double newRange = (250 - 30);
-
-		force1 = ((force1 - 20) / oldRange) * newRange + 30;
-		force2 = ((force2 - 20) / oldRange) * newRange + 30;
-
-		// apply height changes to affected squares and near neighbours
-		/*for (Square v : squares) {
-
-			if (v.getGroup() == g1)
-				getNeighbours(4, v, (int) Math.round(force1));
-			else
-				getNeighbours(4, v, (int) Math.round(force1));
-		}*/
-
-	}
-
-	public void makeMountains(double force1, double force2, ArrayList<Square> squares) {
-		if (force1 > 300) {
-			force1 = 500;
-		}
-		if (force2 > 300) {
-			force2 = 500;
-		}
-
-		if (force1 < 20) {
-			force1 = 20;
-		}
-		if (force2 < 20) {
-			force2 = 20;
-		}
-
-		// convert force to rating between 0 and 250 - for height map boundaries.
-		double oldRange = (500 - 20);
-		double newRange = (250 - 30);
-
-		force1 = ((force1 - 20) / oldRange) * newRange + 30;
-		force2 = ((force2 - 20) / oldRange) * newRange + 30;
-
-		// apply height changes to affected squares and near neighbours
-		for (Square v : squares) {
-
-			//getNeighbours(2, v, (int) Math.round(force1));
-		}
-
-	}
-
-	public void getNeighbours(int times, Square x, int force) {
-
-		// get group of square involved
-		int g = x.getGroup();
-		for (int i = 1; i < times; i++) {
-			for (Square a : continents[g]) {
-
-				if (force < 5) {
-					return;
-				}
-
-				// need to check them off, so they are not overwritten
-
-				if (a.getX() == x.getX() && a.getY() == x.getY() && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-				if (a.getX() == x.getX() + i && a.getY() == x.getY() + i && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-				if (a.getX() == x.getX() - i && a.getY() == x.getY() - i && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-				if (a.getX() == x.getX() && a.getY() == x.getY() + i && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-				if (a.getX() == x.getX() + i && a.getY() == x.getY() && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-				if (a.getX() == x.getX() - i && a.getY() == x.getY() && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-				if (a.getX() == x.getX() && a.getY() == x.getY() - i && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-				if (a.getX() == x.getX() - i && a.getY() == x.getY() + i && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-				if (a.getX() == x.getX() + i && a.getY() == x.getY() - i && a.checked() == false) {
-					a.setHeight(a.getHeight() + force / i);
-					a.setChecked(true);
-				}
-
-			}
-		}
-
-		for (Square a : continents[g]) {
-			a.setChecked(false);
-		}
-	}
-
+	
 	// run through all the Squares, getting their X and Y coordinates
 	public void plotMaps() {
 
