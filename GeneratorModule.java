@@ -1,17 +1,16 @@
 import java.util.Random;
 
 public class GeneratorModule {
-	
+
 	private int size;
 	private int[][] groupMap;
-	
+
 	public GeneratorModule(int size) {
 		groupMap = new int[size][size];
 		this.size = size;
 	}
-	
+
 	public void newNumbers(int x, int y, int size, int sizeY, int group) {
-		
 
 		Random ran = new Random();
 
@@ -46,9 +45,6 @@ public class GeneratorModule {
 		focus();
 		closer(1);
 
-		
-		
-		
 	}
 
 	public int getNeighbours(int i, int j) {
@@ -172,7 +168,7 @@ public class GeneratorModule {
 
 	}
 
-	public int[][] getMapping(){
+	public int[][] getMapping() {
 		return groupMap;
 	}
 

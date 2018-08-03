@@ -67,8 +67,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	public GlobeGUI(int size) {
 
-		
-		
 		this.setTitle("Continental Drift Simulator");
 		stop = true;
 		g = new Globe(size);
@@ -83,7 +81,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		layoutComponents();
 		paused = true;
 		plt.execute();
-		
+
 		redraw();
 
 	}
@@ -210,8 +208,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		};
 		panel.setPreferredSize(new Dimension(size * 3, size * 3));
 
-		
-		//panel2 for controls
+		// panel2 for controls
 		panel2 = new JPanel();
 
 		advance = new JButton("Advance time");
@@ -288,11 +285,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 		// panel4 for entire rightside parent panel
 		panel4 = new JPanel();
-		panel4.setLayout(new GridLayout(5,1));
+		panel4.setLayout(new GridLayout(5, 1));
 		panel4.add(panel5);
 		panel4.add(panel2);
 		panel4.add(panel3);
-		
 
 		this.add(panel4, BorderLayout.EAST);
 		// this.add(panel2, BorderLayout.SOUTH);
@@ -376,22 +372,16 @@ public class GlobeGUI extends JFrame implements ActionListener {
 			play.setEnabled(true);
 		}
 	}
-	
-	public void getData() {	
-		
+
+	public void getData() {
+
 		int supers = g.getSuperCount();
 		noSuperContinentsF.setText(Integer.toString(supers));
-		
+
 		double seaLevelChange = seaBase - g.iceCover();
-		
-		
-		
+
 		seaChangeF.setText(String.format("%.1f", seaLevelChange));
-		
-		
-		
-		
-		
+
 	}
 
 	public static void main(String[] args) {

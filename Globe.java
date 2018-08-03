@@ -20,6 +20,10 @@ public class Globe {
 											// building in the right places, and possibly crust deletion
 	private int iceCover;
 
+	// the continents involved in the collision
+	private int g1;
+	private int g2;
+
 	private int superCount; // number of supercontinents
 
 	public Globe(int size) {
@@ -39,10 +43,32 @@ public class Globe {
 				squares[i][j] = new Square(-1);
 			}
 		}
-		
+
 		setHeightMap(new int[size][size]);
 		groupMap = new int[size][size];
 		superGroupMap = new int[size][size];
+	}
+
+	// makes square continents - very useful for testing
+	public void generateSquareContinent(int x, int y, int size) {
+
+		ArrayList<Square> cont = new ArrayList<Square>();
+
+		for (int i = x; i < x + size; i++) {
+			for (int j = y; j < y + size; j++) {
+				squares[i][j].setX(i);
+				squares[i][j].setY(j);
+				squares[i][j].setHeight(75);
+				squares[i][j].setGroup(continentsCounter); // group should be same as continentsCounter
+				squares[i][j].setSuperGroup(continentsCounter);
+				getSuperContinentSize()[continentsCounter]++;
+				cont.add(squares[i][j]);
+
+			}
+		}
+
+		continents[continentsCounter] = cont;
+		continentsCounter++;
 	}
 
 	public void generate(int x, int y, int sizeX, int sizeY, int group) {
@@ -63,7 +89,7 @@ public class Globe {
 					squares[i][j].setHeight(75);
 					squares[i][j].setGroup(group); // group should be same as continentsCounter
 					squares[i][j].setSuperGroup(group);
-					superContinentSize[continentsCounter]++;
+					getSuperContinentSize()[continentsCounter]++;
 					cont.add(squares[i][j]);
 
 				}
@@ -88,131 +114,11 @@ public class Globe {
 
 	public void move() {
 
-		Random t = new Random();
-		int possibility = t.nextInt(15); // increase number to control rarity of new boundary formation
-		// basically - do any continents share the same supergroup ID?
-		// if so, find the one that joined the larger supergroup, change its superGroup
-		// ID back to its group ID
-		// inverse its direction to simulate a new divergent boundary.
-		if (superCount > 0) { // is there even a supercontinent in existence?
-			if (possibility == 2) { // rare chance of new divergent boundary forming
-
-				// cycle through continents, find some that share supercontinent ID
-				for (int i = 1; i < continentsCounter; i++) {
-					for (int j = 1; j < continentsCounter; j++) {
-						if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
-							if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
-
-								if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
-
-									// if supercontinent is stationary, set random values of thrust
-									if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
-										int randXspd = t.nextInt(4) - t.nextInt(4);
-										int randYspd = t.nextInt(4) - t.nextInt(4);
-										for (Square a : continents[i]) {
-											a.setSuperGroup(a.getGroup());
-											a.setXVel(randXspd);
-											a.setYVel(randYspd);
-										}
-									} else {
-										// otherwise invert direction for nice divergence.
-										for (Square a : continents[i]) {
-											a.setSuperGroup(a.getGroup());
-											a.setXVel(-a.getXVel());
-											a.setYVel(-a.getYVel());
-
-										}
-
-									}
-								} else {
-									if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
-										int randXspd = t.nextInt(4) - t.nextInt(4);
-										int randYspd = t.nextInt(4) - t.nextInt(4);
-										for (Square a : continents[j]) {
-											a.setSuperGroup(a.getGroup());
-											a.setXVel(randXspd);
-											a.setYVel(randYspd);
-										}
-									} else {
-
-										for (Square a : continents[j]) {
-											a.setSuperGroup(a.getGroup());
-											a.setXVel(-a.getXVel());
-											a.setYVel(-a.getYVel());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				// count here as changed
-				getNumberOfSuperContinents();
-			}
-		}
-
-		// captures specific squares.
-		collisions = new ArrayList<Square>(); // reset collisions each time
-		int groupNumber = -2;
-		boolean collision = false;
-
-		int o = 0;
-		int p = 0;
-		int h = 0;
-		int k = 0;
+		splitSuperContinents();
 
 		checkBoundaries();
 
-		// NEW ************* maybe try putting this check before the boundaries check
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-
-				// pre emptive check for overlapping - before actual move. one step ahead.
-
-				if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY() // arrayIndexOutofBounds:
-																									// 152 , 150 , -2 ,
-																									// 150
-						+ (squares[i][j].getYVel())] > 0) {
-					if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
-							+ (squares[i][j].getYVel())] != squares[i][j].getGroup()) {
-
-						// is supergroup present here.
-						if (superGroupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
-								+ (squares[i][j].getYVel())] > 0) {
-							// is it part of same supergroup.
-							if (superGroupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
-									+ (squares[i][j].getYVel())] != squares[i][j].getSuperGroup()) {
-
-								// save i and j of first instance - to get groups and stuff
-								if (collision == false) {
-									o = i;
-									p = j;
-									groupNumber = groupMap[squares[i][j].getX()
-											+ (squares[i][j].getXVel())][squares[i][j].getY()
-													+ (squares[i][j].getYVel())];
-									h = squares[i][j].getX() + (squares[i][j].getXVel());
-									k = squares[i][j].getY() + (squares[i][j].getYVel());
-								}
-
-								collision = true;
-
-								// amass a list of overlapped squares FIRST
-								collisions.add(squares[i][j]);
-								collisions.add(getSquare(h, k, groupNumber)); // on the other continent
-							}
-						}
-					}
-				}
-
-			}
-		}
-
-		if (collision == true) {
-
-			// which groups are involved?
-			int g1 = squares[o][p].getGroup();
-			int g2 = groupMap[squares[o][p].getX() + squares[o][p].getXVel()][squares[o][p].getY()
-					+ squares[o][p].getYVel()];
+		if (checkCollision() == true) {
 
 			// masses can simply equal number of squares
 			int mass1 = continents[g1].size();
@@ -225,7 +131,7 @@ public class Globe {
 			double speedYsecond = continents[g2].get(0).getYVel();
 
 			////////////////////////// collision mathematics can be swapped here
-			////////////////////////// ////////////////////////////////////////////////////////////////
+			////////////////////////// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			CollisionGrazing minorCollision = new CollisionGrazing(mass1, mass2, speedXfirst, speedYfirst, speedXsecond,
 					speedYsecond);
@@ -264,12 +170,14 @@ public class Globe {
 
 				// if both isolated - neither is in a supercontinent already
 				int superContParent = 0;
-				if (superContinentSize[sg1] >= superContinentSize[sg2]) {
+				if (getSuperContinentSize()[sg1] >= getSuperContinentSize()[sg2]) {
 					superContParent = sg1;
-					superContinentSize[superContParent] = superContinentSize[superContParent] + superContinentSize[sg2];
+					getSuperContinentSize()[superContParent] = getSuperContinentSize()[superContParent]
+							+ getSuperContinentSize()[sg2];
 				} else {
 					superContParent = sg2;
-					superContinentSize[superContParent] = superContinentSize[superContParent] + superContinentSize[sg1];
+					getSuperContinentSize()[superContParent] = getSuperContinentSize()[superContParent]
+							+ getSuperContinentSize()[sg1];
 				}
 
 				// so supercontinent ID is assigned as the bigger supercontinent ( remains same
@@ -300,6 +208,8 @@ public class Globe {
 				}
 
 				makeMountains(majorCollision.getForce1(), majorCollision.getForce2(), g1, collisions);
+				
+		
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -310,7 +220,7 @@ public class Globe {
 			}
 
 			// re-check for boundary crossings again
-			
+
 		}
 
 		checkBoundaries();
@@ -363,19 +273,155 @@ public class Globe {
 						// find the amount it's gone over the limit, don't just set to 0
 						int amountOver = (squares[i][j].getX() + squares[i][j].getXVel()) - size;
 						squares[i][j].setX(amountOver);
-					}  if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
+					}
+					if (squares[i][j].getY() + squares[i][j].getYVel() >= size) {
 						int amountOver = (squares[i][j].getY() + squares[i][j].getYVel()) - size;
 						squares[i][j].setY(amountOver);
-					} if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
+					}
+					if (squares[i][j].getX() + squares[i][j].getXVel() < 0) {
 						// find the amount it's gone under 0, set to size - that
 						int amountUnder = squares[i][j].getX() + squares[i][j].getXVel() + size;
 						squares[i][j].setX(amountUnder);
-					} if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
+					}
+					if (squares[i][j].getY() + squares[i][j].getYVel() < 0) {
 						int amountUnder = squares[i][j].getY() + squares[i][j].getYVel() + size;
 						squares[i][j].setY(amountUnder);
 					}
 
 				}
+			}
+		}
+	}
+
+	public boolean checkCollision() {
+
+		// captures specific squares.
+		collisions = new ArrayList<Square>(); // reset collisions each time
+		int groupNumber = -2;
+
+		boolean collision = false;
+
+		int o = 0;
+		int p = 0;
+		int h = 0;
+		int k = 0;
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+
+				// pre emptive check for overlapping - before actual move. one step ahead.
+
+				if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+						+ (squares[i][j].getYVel())] > 0) {
+					if (groupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+							+ (squares[i][j].getYVel())] != squares[i][j].getGroup()) {
+
+						// is supergroup present here.
+						if (superGroupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+								+ (squares[i][j].getYVel())] > 0) {
+							// is it part of same supergroup.
+							if (superGroupMap[squares[i][j].getX() + (squares[i][j].getXVel())][squares[i][j].getY()
+									+ (squares[i][j].getYVel())] != squares[i][j].getSuperGroup()) {
+
+								// save i and j of first instance - to get groups and stuff
+								if (collision == false) {
+									o = i;
+									p = j;
+									groupNumber = groupMap[squares[i][j].getX()
+											+ (squares[i][j].getXVel())][squares[i][j].getY()
+													+ (squares[i][j].getYVel())];
+									h = squares[i][j].getX() + (squares[i][j].getXVel());
+									k = squares[i][j].getY() + (squares[i][j].getYVel());
+								}
+
+								collision = true;
+
+								// amass a list of overlapped squares FIRST
+								collisions.add(squares[i][j]);
+								collisions.add(getSquare(h, k, groupNumber)); // on the other continent
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// which continents are involved?
+		g1 = squares[o][p].getGroup();
+		g2 = groupMap[squares[o][p].getX() + squares[o][p].getXVel()][squares[o][p].getY() + squares[o][p].getYVel()];
+
+		return collision;
+	}
+
+	public void splitSuperContinents() {
+		Random t = new Random();
+		int possibility = t.nextInt(15); // increase number to control rarity of new boundary formation
+		// basically - do any continents share the same supergroup ID?
+		// if so, find the one that joined the larger supergroup, change its superGroup
+		// ID back to its group ID
+		// inverse its direction to simulate a new divergent boundary.
+		if (superCount > 0) { // is there even a supercontinent in existence?
+			if (possibility == 2) { // rare chance of new divergent boundary forming
+
+				// cycle through continents, find some that share supercontinent ID
+				for (int i = 1; i < continentsCounter; i++) {
+					for (int j = 1; j < continentsCounter; j++) {
+						if (continents[i].get(0).getGroup() != continents[j].get(0).getGroup()) {
+							if (continents[i].get(0).getSuperGroup() == continents[j].get(0).getSuperGroup()) {
+
+								if (continents[i].get(0).getSuperGroup() != continents[i].get(0).getGroup()) {
+
+									for (Square a : continents[j]) {
+										a.setSuperGroup(a.getGroup());
+									}
+									// if supercontinent is stationary, set random values of thrust
+									if (continents[i].get(0).getXVel() == 0 && continents[i].get(0).getYVel() == 0) {
+										int randXspd = t.nextInt(4) - t.nextInt(4);
+										int randYspd = t.nextInt(4) - t.nextInt(4);
+										for (Square a : continents[i]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(randXspd);
+											a.setYVel(randYspd);
+										}
+									} else {
+										// otherwise invert direction for nice divergence.
+										for (Square a : continents[i]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(-a.getXVel());
+											a.setYVel(-a.getYVel());
+
+										}
+
+									}
+								} else {
+									
+									for (Square a : continents[i]) {
+										a.setSuperGroup(a.getGroup());
+									}
+									
+									if (continents[j].get(0).getXVel() == 0 && continents[j].get(0).getYVel() == 0) {
+										int randXspd = t.nextInt(4) - t.nextInt(4);
+										int randYspd = t.nextInt(4) - t.nextInt(4);
+										for (Square a : continents[j]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(randXspd);
+											a.setYVel(randYspd);
+										}
+									} else {
+
+										for (Square a : continents[j]) {
+											a.setSuperGroup(a.getGroup());
+											a.setXVel(-a.getXVel());
+											a.setYVel(-a.getYVel());
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				// count here as changed
+				getNumberOfSuperContinents();
 			}
 		}
 	}
@@ -405,7 +451,6 @@ public class Globe {
 		// apply height changes to affected squares and near neighbours
 		/*for (Square v : squares) {
 
-			
 			if (v.getGroup() == g1)
 				getNeighbours(4, v, (int) Math.round(force1));
 			else
@@ -438,14 +483,11 @@ public class Globe {
 
 		// apply height changes to affected squares and near neighbours
 		for (Square v : squares) {
-			
 
 			//getNeighbours(2, v, (int) Math.round(force1));
 		}
 
 	}
-	
-	
 
 	public void getNeighbours(int times, Square x, int force) {
 
@@ -453,7 +495,7 @@ public class Globe {
 		int g = x.getGroup();
 		for (int i = 1; i < times; i++) {
 			for (Square a : continents[g]) {
-				
+
 				if (force < 5) {
 					return;
 				}
@@ -505,7 +547,7 @@ public class Globe {
 
 			}
 		}
-		
+
 		for (Square a : continents[g]) {
 			a.setChecked(false);
 		}
@@ -526,18 +568,6 @@ public class Globe {
 				heightMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getHeight();
 				groupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getGroup();
 				superGroupMap[squares[i][j].getX()][squares[i][j].getY()] = squares[i][j].getSuperGroup();
-			}
-		}
-	}
-
-	// plot new positions on the group map, and loop through to see if any planned
-	// positions have continent in them.
-	public void displayGroupMap() {
-		for (int i = 0; i < size; i++) {
-			System.out.println();
-			for (int j = 0; j < size; j++) {
-				System.out.print(groupMap[i][j] + " ");
-
 			}
 		}
 	}
@@ -637,4 +667,16 @@ public class Globe {
 		return superCount;
 	}
 
+	public int[] getSuperContinentSize() {
+
+		return superContinentSize;
+	}
+
+	public ArrayList<Square>[] getContinents() {
+		return continents;
+	}
+	
+	public int getNumCollisions() {
+		return collisions.size();
+	}
 }

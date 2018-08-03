@@ -1,4 +1,5 @@
 
+// this module can create supercontinents by making two continents move as one, after an inelastic collision.
 public class CollisionMajor {
 	
 	private int mass1;
@@ -42,8 +43,8 @@ public class CollisionMajor {
 	double By = mass2 * speedYsecond;
 
 	// total mass
-	double totalX = Ax + Bx;
-	double totalY = Ay + By;
+	totalX = Ax + Bx;
+	totalY = Ay + By;
 
 	totalX = totalX / (mass1 + mass2);
 	totalY = totalY / (mass1 + mass2);
@@ -63,8 +64,8 @@ public class CollisionMajor {
 
 	// mountain formation coefficient - proportion of force used in mountain
 	// building - all energy makes mountains
-	mountainCoefficient = 1.00;
 
+	//force for mountain building
 	force1 = force1 * mountainCoefficient;
 	force2 = force2 * mountainCoefficient;
 	

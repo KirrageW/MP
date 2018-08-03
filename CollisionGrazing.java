@@ -17,6 +17,8 @@ public class CollisionGrazing {
 	private double force1;
 	private double force2;
 	
+	private double mountainCoefficient;
+	
 	public CollisionGrazing(int mass1, int mass2, double x1, double y1, double x2, double y2) {
 		
 		this.mass1 = mass1;
@@ -40,7 +42,7 @@ public class CollisionGrazing {
 
 	// mountain formation coefficient - proportion of force used in mountain
 	// building
-	double mountainCoefficient = 0.25;
+	mountainCoefficient = 0.25;
 
 	force1 = force1 * 0.25;
 	force2 = force2 * 0.25;
@@ -81,6 +83,9 @@ public class CollisionGrazing {
 		return force2;
 	}
 	
+	public double getMountainCoefficient() {
+		return mountainCoefficient;
+	}
 
 
 }

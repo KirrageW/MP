@@ -22,3 +22,7 @@
 /CollisionGrazing.class
 /CollisionMajor.class
 /GlobeTest.class
+/CollisionGrazingTest.class
+/GlobeGUITest.class
+/GlobeGUIPerformanceTest.class
+/GlobeMoveMethodPerformanceTest.class
