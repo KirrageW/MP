@@ -22,6 +22,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
+/**
+ * A simple GUI designed to give basic functionality of my implemented system, and demonstrate the possibility of features the
+ * model could display. Is coupled to Globe directly.
+ * @author 2354535k
+ *
+ */
 public class GlobeGUI extends JFrame implements ActionListener {
 
 	private Globe g;
@@ -65,27 +71,34 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	private PlayerTask plt;
 
+	/**
+	 * Constructor. 
+	 * @param size - of Globe canvas.
+	 */
 	public GlobeGUI(int size) {
-
+	
 		this.setTitle("Continental Drift Simulator");
 		stop = true;
 		g = new Globe(size);
 
 		iceOnMap = true;
-
+		
 		g.plotMaps();
 		this.size = size;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+	
 		plt = new PlayerTask();
 		layoutComponents();
 		paused = true;
 		plt.execute();
 
 		redraw();
-
 	}
 
+	/**
+	 * Offers a choice of 2, 3, or 4 continents for the user to start the model with.
+	 * @param number
+	 */
 	public void generate(int number) {
 
 		if (number == 3) {
@@ -117,6 +130,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		seaBase = g.iceCover();
 	}
 
+	/**
+	 * Gives continents a random speed and direction.
+	 * @return
+	 */
 	public int randomSpeed() {
 		Random r = new Random();
 
@@ -130,12 +147,21 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		return randomSpeed;
 	}
 
+	/**
+	 * Resets the model, deleting all continents.
+	 */
 	public void reset() {
 		g = new Globe(size);
 		redraw();
 	}
 
 	// makes a whole new frame and everything atm - java garbage should handle it
+	/**
+	 * Redraws the map with updated locations and heights. A new BufferedImage is created, leaving
+	 * Java machine to dispose of old one. 
+	 * It is in this method that intuitive colors are added to the map, depending on height of continent, and
+	 * whether continent is located in the poles.
+	 */
 	public void redraw() {
 		img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 		gr = (Graphics2D) img.getGraphics();
@@ -192,6 +218,9 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	}
 
+	/**
+	 * Lays out swing components.
+	 */
 	public void layoutComponents() {
 
 		panel = new JPanel() {
@@ -291,7 +320,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		panel4.add(panel3);
 
 		this.add(panel4, BorderLayout.EAST);
-		// this.add(panel2, BorderLayout.SOUTH);
 		this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
@@ -339,6 +367,11 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * A thread to auto play the model, repeating calls to move().
+	 * @author 2354535k
+	 *
+	 */
 	private class PlayerTask extends SwingWorker<Void, Integer> {
 		protected Void doInBackground() {
 			while (true) {
@@ -373,6 +406,9 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Data feedback from Globe class, to give a flavour of some information that can be offered besides the visual map
+	 */
 	public void getData() {
 
 		int supers = g.getSuperCount();

@@ -29,8 +29,15 @@ public class GlobeMoveMethodPerformanceTest {
 
 	@Before
 	public void setUp() {	
-		testAll.generateSquareContinent(1, 1, (size/2)-5);	
-		testAll.generateSquareContinent(size/2, size/2, (size/2)-5);	
+		double sizeForTestDouble = (size*0.25)-1; //minus 1 to keep below array bounds
+		System.out.println("double size" + sizeForTestDouble);
+		int sizeForTest = (int)Math.round(sizeForTestDouble);
+		System.out.println("int size" + sizeForTest);
+		testAll.generateSquareContinent(1, 1, (sizeForTest));	
+		
+		//testAll.generateSquareContinent(size/2, size/2, (size/2)-5);	
+		
+		System.out.println(testAll.getContinents()[1].size());
 	}
 	
 	/**
@@ -38,13 +45,39 @@ public class GlobeMoveMethodPerformanceTest {
 	 */
 	@Test//(timeout = 750)
 	public void test() {
+		
 		testAll.setVelocity(1, 5, 5);
-		//testAll.setVelocity(2, -5, -5);
+
 		long start = System.currentTimeMillis();
 		testAll.move();
-		System.err.println(testAll.getNumCollisions());
 		long end = System.currentTimeMillis();	
+		
 		System.out.println(end-start);	
+		System.out.println("oeifewij");
 	}
+	
+	/*RESULTS
+	 * getNeighbors(2) - no collisions, edge formation only.
+	 * 62001 - 1,1,size = 52247 
+	 * 1,1,size*0.90 = 34598
+	 * 1,1,size*0.80 = 22015
+	 * 34969 - 1,1,size*0.75 = 16538 
+	 * 15376 - 1,1,size*0.50 = 3831 
+	 * 3844 - 1,1,size * 0.25 = 483
+	 * 
+	 * getNeighbors(1) - no collisions
+	 * 1,1,size = 7620
+	 * 1,1,size*0.75 = 2280
+	 * 1,1,size*0.50 = 500
+	 * 1,1,size*0.25 = 84
+	 * 
+	 * getNeighbours removed - no collisions 
+	 * 1,1,size = 74
+	 * 1,1,size*0.75 = 52
+	 * 1,1,size*0.50 = 50
+	 * 1,1,size*0.25 = 52
+	 * 
+	 * 
+	 */
 
 }

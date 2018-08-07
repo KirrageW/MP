@@ -1,10 +1,20 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-
+/**
+ * Globe is the core of the system. It maintains lists of Squares that make up continents. It has the move() method which progresses
+ * the model. Components plug into Globe to offer additional functionality, such as mountain generation or collision momentum mechanics,
+ * and also continent generation.
+ * 
+ * Various 2d arrays are maintained separately from the list of Squares. These offer improved collision detection which bypasses the need to
+ * access the squares, and also includes the heightMap. HeightMap is the imagined main output of the program, which a GUI can turn into
+ * a visual rendering of the globe.
+ * @author 2354535k
+ *
+ */
 public class Globe {
 
-	private int size;
+	private int size; // size of an axis, of the square canvas
 	protected Square[][] squares; // this is just a list. the 2d index has no bearing on the location of the
 									// square on the visual map
 	private int[][] heightMap; // this is a map. the 2d array index is derived from the x and y coordinates of
@@ -13,19 +23,25 @@ public class Globe {
 								// the same place
 	private int[][] superGroupMap; // this will be a 2d array map that checks positions of superContinents
 
-	private ArrayList<Square>[] continents;
-	private int[] superContinentSize;
-	private int continentsCounter;
+	private ArrayList<Square>[] continents; // how continents are stored, rather than in a separate data structure - see report.
+	private int[] superContinentSize; // the size, in Squares of supercontinents, so a smaller one can join a larger one.
+	private int continentsCounter; // a useful counter for making continents and assigning them the correct index for continents.
 	private ArrayList<Square> collisions; // temporary list to store squares involved in a collision. handy for mountain
 											// building in the right places, and possibly crust deletion
-	private int iceCover;
+	private int iceCover; // amount of Squares that are in the polar region and can accomodate ice sheet.
 
 	// the continents involved in the collision
 	private int g1;
 	private int g2;
 
 	private int superCount; // number of supercontinents
+	
 
+	/**
+	 * Constructor. Initiates a list of Squares, proportional to the surface area of the given size.
+	 * Initialises necessary instance variables. 
+	 * @param size
+	 */
 	public Globe(int size) {
 
 		iceCover = 0;
@@ -49,7 +65,14 @@ public class Globe {
 		superGroupMap = new int[size][size];
 	}
 
+	
 	// makes square continents - very useful for testing
+	/**
+	 * Makes rectangular continents - useful for testing.
+	 * @param x - top left point location coordinate x axis
+	 * @param y -  top left point location coordinate y axis
+	 * @param size 
+	 */
 	public void generateSquareContinent(int x, int y, int size) {
 
 		ArrayList<Square> cont = new ArrayList<Square>();
@@ -71,6 +94,15 @@ public class Globe {
 		continentsCounter++;
 	}
 
+	/**
+	 * The current generator method to make the starting continents. The current generator class returns a int[][] where 1 represents
+	 * the location of continent. These are the returned into a new collective continent whose group number is continentsCounter.
+	 * @param x - location
+	 * @param y - location
+	 * @param sizeX 
+	 * @param sizeY
+	 * @param group - which continent this will belong to.
+	 */
 	public void generate(int x, int y, int sizeX, int sizeY, int group) {
 
 		// modular continent generator - it just needs to output an int[][] with 1 set
@@ -100,7 +132,12 @@ public class Globe {
 		continentsCounter++;
 	}
 
-	// sets velocities of all members of chosen group CHANGE TO USE CONTINENTS
+	/**
+	 * Sets speed and direction of continents, by group number.
+	 * @param group
+	 * @param xVel 
+	 * @param yVel
+	 */
 	public void setVelocity(int group, int xVel, int yVel) {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
@@ -112,6 +149,11 @@ public class Globe {
 		}
 	}
 
+	/**
+	 * The core method of the model, it moves Squares by their current xVel and yVel values on the grid. 
+	 * Collision detection is engaged here, as well as collision handling using any modules that are plugged into the system.
+	 * In its current form, much complexity is created by my super continents mechanics. I would advise any future user to remove this.
+	 */
 	public void move() {
 
 		splitSuperContinents();
@@ -130,8 +172,7 @@ public class Globe {
 			double speedXsecond = continents[g2].get(0).getXVel();
 			double speedYsecond = continents[g2].get(0).getYVel();
 
-			////////////////////////// collision mathematics can be swapped here
-			////////////////////////// /////////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////// collision mathematics can be swappedand changed here. by using separate modules.
 
 			CollisionGrazing minorCollision = new CollisionGrazing(mass1, mass2, speedXfirst, speedYfirst, speedXsecond,
 					speedYsecond);
@@ -146,16 +187,13 @@ public class Globe {
 				b.setYVel(minorCollision.getNewYSpeed2());
 			}
 
-			
+			// make mountains here using component
 			MountainFormation makeMountains = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions, continents[g1], false);
 			continents[g1] = makeMountains.getDeformedContinent();
 			MountainFormation makeMountains2 = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g2, collisions, continents[g2], false);
 			continents[g2] = makeMountains2.getDeformedContinent();
 			
-			//makeMountains(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions);
-
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+			
 			double proportion = (double) collisions.size()
 					/ ((double) continents[g1].size() + (double) continents[g2].size());
 
@@ -163,13 +201,9 @@ public class Globe {
 			// greater than 10% of total continent, yes
 			// MAJOR COLLISION
 			if (proportion > 0.05) {
-
-				////////////////////////// collision mathematics can be swapped here
-				////////////////////////// ////////////////////////////////////////////////////////////////
 				CollisionMajor majorCollision = new CollisionMajor(mass1, mass2, speedXfirst, speedYfirst, speedXsecond,
 						speedYsecond);
-				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+				
 				// supercontinent handling
 				int sg1 = continents[g1].get(0).getSuperGroup();
 				int sg2 = continents[g2].get(0).getSuperGroup();
@@ -203,7 +237,7 @@ public class Globe {
 				// count here as changed
 				getNumberOfSuperContinents();
 
-				// updates speeds of squares that are in this supercontinent now.
+				// updates speeds of Squares that are in this supercontinent.
 				for (int i = 0; i < size; i++) {
 					for (int j = 0; j < size; j++) {
 						if (squares[i][j].getGroup() == superContParent) {
@@ -212,31 +246,20 @@ public class Globe {
 						}
 					}
 				}
-				
-				///////mountain formation modules used here. Can be swapped.
-
+					
+				// mountains created here using component.
 				makeMountains = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g1, collisions, continents[g1], false);
 				continents[g1] = makeMountains.getDeformedContinent();
 				makeMountains2 = new MountainFormation(minorCollision.getForce1(), minorCollision.getForce2(), g2, collisions, continents[g2], false);
 				continents[g2] = makeMountains2.getDeformedContinent();
-
-				//////////////////////////////////////////////////////////////////////////////////////////////////
-
 			}
-
-			else {
-
-			}
-
-			// re-check for boundary crossings again
-
 		}
 
+		// re check boundaries again to acocmodate for changed speeds.
 		checkBoundaries();
-		// carry on...
-		ArrayList<Square> edges = new ArrayList<Square>();
-
-		// make mountains on leading edge
+	
+		// make mountains on leading edge - to simulate the continent pushing against oceanic plate.
+		ArrayList<Square> edges = new ArrayList<Square>();	
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				if (squares[i][j].getHeight() > 0) {
@@ -250,9 +273,7 @@ public class Globe {
 				}
 			}
 		}
-		// how much force, not much
-
-		MountainFormation makeMountains = new MountainFormation(20, 20, g1, edges, true);
+		MountainFormation makeMountains = new MountainFormation(20, 20, g1, edges, true); // I have chosen a low force for this currently - it could be calculated to account for mass.
 		edges = makeMountains.getDeformedContinent();
 
 		// move here. check for boundaries and handle accordingly
@@ -265,12 +286,14 @@ public class Globe {
 			}
 		}
 
-		// threads that all join before ending the move method?
+		// plot new data
 		plotMaps();
-		iceCover();
-		// erosion(); 
+		iceCover(); 
 	}
 
+	/**
+	 * Allows continents to cross boundaries and give the model a spherical feeling.
+	 */
 	public void checkBoundaries() {
 
 		// repeat twice, as corners take squares over both horizontal and vertical
@@ -303,6 +326,14 @@ public class Globe {
 		}
 	}
 
+	/**
+	 * Important method to check for collisions. It iterates through each Squares position, and first checks to see
+	 * if the new position contains continent, or is simply ocean. If land, it checks that it is not part of the same continent.
+	 * If different, it checks whether it is not part of same super continent. If different, there is a collision. 
+	 * Squares that fulfil these conditions are collected in a list called collisions. The group numbers of involved continents are 
+	 * also saved in g1 and g2. 
+	 * @return boolean. True indicates a collision.
+	 */
 	public boolean checkCollision() {
 
 		// captures specific squares.
@@ -345,8 +376,7 @@ public class Globe {
 								}
 
 								collision = true;
-
-								// amass a list of overlapped squares FIRST
+								// amass a list of overlapped squares
 								collisions.add(squares[i][j]);
 								collisions.add(getSquare(h, k, groupNumber)); // on the other continent
 							}
@@ -363,12 +393,21 @@ public class Globe {
 		return collision;
 	}
 
+	/**
+	 * A complex method regarding the ill thought out supercontinents. Using the chance of from a random integer being 2, out of a 
+	 * range that can be varied (currently 15), it cycles through existing supercontinents and reverts the supercontinent ID 
+	 * of a continent back to its continent ID. If the supercontinent is moving, it removes the smaller continent in this way, and 
+	 * reverses the direction to hopefully give a nice divergence. Otherwise, it gives random velocities to the x and Y speeds.
+	 * This signifies a new random convection current that has taken to move the continent, and could very well happen in any direciton.
+	 * many times, the new direction is right back into the supercontinent, causing more mountains and disturbance. This isn't a terrible
+	 * visual effect. 
+	 */
 	public void splitSuperContinents() {
 		Random t = new Random();
 		int possibility = t.nextInt(15); // increase number to control rarity of new boundary formation
 		// basically - do any continents share the same supergroup ID?
 		// if so, find the one that joined the larger supergroup, change its superGroup
-		// ID back to its group ID
+		// ID back to its group ID.
 		// inverse its direction to simulate a new divergent boundary.
 		if (superCount > 0) { // is there even a supercontinent in existence?
 			if (possibility == 2) { // rare chance of new divergent boundary forming
@@ -399,9 +438,7 @@ public class Globe {
 											a.setSuperGroup(a.getGroup());
 											a.setXVel(-a.getXVel());
 											a.setYVel(-a.getYVel());
-
 										}
-
 									}
 								} else {
 									
@@ -437,7 +474,9 @@ public class Globe {
 	}
 
 	
-	// run through all the Squares, getting their X and Y coordinates
+	/**
+	 * A loop to update the positions on all the used 2d maps.
+	 */
 	public void plotMaps() {
 
 		// reset height map - overwrites old positions
@@ -458,6 +497,13 @@ public class Globe {
 
 	// returns a square matching an x and y coordinate from the group map or height
 	// map
+	/**
+	 * Returns a square from a known continent.
+	 * @param x (x axis location)
+	 * @param y (y axis location)
+	 * @param group (continent id)
+	 * @return the Square, or null if not found.
+	 */
 	public Square getSquare(int x, int y, int group) {
 
 		for (Square a : continents[group]) {
@@ -469,39 +515,18 @@ public class Globe {
 
 	}
 
-	// it's got to be within each continent...
-	public void erosion() {
 
-		int totalMaterial = 0;
-		for (int i = 1; i < continentsCounter; i++) {
-			for (Square a : continents[i]) {
-				// for squares greater than the default starting height - those that have been
-				// thrust upwards
-				if (a.getHeight() > 75) {
-
-					int material = a.getHeight() - a.getHeight() / 5;
-					a.setHeight(material);
-					totalMaterial = totalMaterial + material;
-					// and give to neighbours that are lower...
-
-				}
-				// disperse material among nearby squares...
-			}
-			for (Square a : continents[i]) {
-				if (a.getHeight() < 150) {
-					a.setHeight(totalMaterial / continents[i].size());
-				}
-			}
-		}
-	}
-
+	/**
+	 * A quick implentation of ice sheet mechanics. If land is in the poles, ice cover is increased.
+	 * @return
+	 */
 	public double iceCover() {
 		iceCover = 0;
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (heightMap[i][j] > 0 && heightMap[i][j] < 175) {
+				if (heightMap[i][j] > 0 && heightMap[i][j] < 175) { // is it land on height map, and below a certain height
+					//(ice on ocean doesn't count, ice sheets wont form on high ground)
 					if (j <= size / 5 || j > size - (size / 5)) {
-
 						iceCover++;
 					}
 				}
@@ -513,25 +538,45 @@ public class Globe {
 		// roughly taking 1% cover of ice above the water level, of total world surface,
 		// to translate to globally 10m of sea level.
 		return icePerCent * 10;
-		// System.err.println("Sea level change = -" + icePerCent * 10 + "m");
 	}
 
+	/**
+	 * Getter for heightMap
+	 * @return int[][] height map
+	 */
 	public int[][] getHeightMap() {
 		return heightMap;
 	}
 
+	/**
+	 * Setter for heightMap
+	 * @param map int[][]
+	 */
 	public void setHeightMap(int[][] map) {
 		this.heightMap = map;
 	}
 
+	/**
+	 * Getter for groupMap
+	 * @return int [][] groups
+	 */
 	public int[][] getGroupMap() {
 		return groupMap;
 	}
 
+	/**
+	 * Getter for size of model
+	 * @return size int
+	 */
 	public int getSize() {
 		return size;
 	}
 
+	/**
+	 * A counting method for the number of superocntinents currently existing.
+	 * If two continents share the same supercontinent ID, there is a supercontinent. 
+	 * Store the continent IDs in hash set so duplicates aren't recounted.
+	 */
 	public void getNumberOfSuperContinents() {
 		HashSet supers = new HashSet();
 
@@ -547,19 +592,37 @@ public class Globe {
 		superCount = supers.size();
 	}
 
+	/**
+	 * Getter for supercontinent number
+	 * @return how  many supercontinents there are.
+	 */
 	public int getSuperCount() {
 		return superCount;
 	}
 
+	/**
+	 * Getter for the size of each supercontinent. Each one is an index position reflecting the continent ID
+	 * of the parent continent - the first continent of the supercontinent.
+	 * @return
+	 */
 	public int[] getSuperContinentSize() {
 
 		return superContinentSize;
 	}
 
+	/**
+	 * return the full list of continents. All Squares that are used in the model (ones that aren't ocean or null) 
+	 * are in these lists.
+	 * @return
+	 */
 	public ArrayList<Square>[] getContinents() {
 		return continents;
 	}
 	
+	/**
+	 * return the number of Squares involved in a collision (overlapping). Useful for testing collision mechanics.
+	 * @return
+	 */
 	public int getNumCollisions() {
 		return collisions.size();
 	}
