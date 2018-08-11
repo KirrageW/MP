@@ -8,9 +8,12 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -23,8 +26,8 @@ import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 /**
- * A simple GUI designed to give basic functionality of my implemented system, and demonstrate the possibility of features the
- * model could display. Is coupled to Globe directly.
+ * A simple GUI designed to provide basic functionality of my implemented system, and demonstrate the possibility of features the
+ * model could display. Is coupled to Globe directly in a 1:1 relationship.
  * @author 2354535k
  *
  */
@@ -68,7 +71,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	private boolean stop;
 	private double seaBase;
-
+	
+	private JButton save;
+	private String file;
+	
 	private PlayerTask plt;
 
 	/**
@@ -83,14 +89,16 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 		iceOnMap = true;
 		
+		
+		
 		g.plotMaps();
 		this.size = size;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
-		plt = new PlayerTask();
+		
 		layoutComponents();
 		paused = true;
-		plt.execute();
+		
 
 		redraw();
 	}
@@ -250,10 +258,13 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		pause.addActionListener(this);
 		ice = new JButton("Show/Hide ice");
 		ice.addActionListener(this);
+		save = new JButton("Save Map");
+		save.addActionListener(this);
 
 		panel2.add(play);
 		panel2.add(pause);
 		panel2.add(ice);
+		panel2.add(save);
 
 		TitledBorder border2 = new TitledBorder("Controls");
 		border2.setTitleJustification(TitledBorder.CENTER);
@@ -327,21 +338,27 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// advance model by one 
 		if (e.getSource() == advance) {
 			g.move();
 			redraw();
 			getData();
 		}
+		// play
 		if (e.getSource() == play) {
 			paused = false;
 			play.setEnabled(false);
+			plt = new PlayerTask();
+			plt.execute();
 		}
-
+		// pause
 		if (e.getSource() == pause) {
 			paused = true;
 			play.setEnabled(true);
+			plt.cancel(true);
+			plt = null;
 		}
-
+		// show or hide ice sheets
 		if (e.getSource() == ice) {
 			if (iceOnMap == true) {
 				iceOnMap = false;
@@ -351,19 +368,28 @@ public class GlobeGUI extends JFrame implements ActionListener {
 				redraw();
 			}
 		}
-
+		// wipe map clean
 		if (e.getSource() == reset) {
 			reset();
 			reset.setEnabled(false);
 			generate.setEnabled(true);
 
 		}
-
+		// trigger generator module
 		if (e.getSource() == generate) {
 			int number = (int) enterNumber.getSelectedItem();
 			generate(number);
 			generate.setEnabled(false);
 			reset.setEnabled(true);
+		}
+		// save map requirement.
+		if (e.getSource() == save) {
+			File file = new File("terrain.png");
+			try {
+				ImageIO.write(img, "png", file);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -379,7 +405,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 					try {
 						Thread.sleep(250);
 					} catch (InterruptedException e) {
-
 						e.printStackTrace();
 					}
 					g.move();
@@ -387,7 +412,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 					try {
 						Thread.sleep(250);
 					} catch (InterruptedException e) {
-
 						e.printStackTrace();
 					}
 					redraw();

@@ -28,10 +28,6 @@ public class MountainFormation {
 		this.squares = squares;	
 		this.continent = continent;
 		this.edge = edge;
-			
-		for (Square a : continent) {
-		a.setChecked(false);
-	}
 		
 		if (edge == false) {
 			makeMountains();
