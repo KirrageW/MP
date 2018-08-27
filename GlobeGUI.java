@@ -26,8 +26,10 @@ import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 /**
- * A simple GUI designed to provide basic functionality of my implemented system, and demonstrate the possibility of features the
- * model could display. Is coupled to Globe directly in a 1:1 relationship.
+ * A simple GUI designed to provide basic functionality of my implemented
+ * system, and demonstrate the possibility of features the model could display.
+ * Is coupled to Globe directly in a 1:1 relationship.
+ * 
  * @author 2354535k
  *
  */
@@ -48,7 +50,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 	private JLabel noContinents;
 	private JLabel noSuperContinents;
 	private JLabel seaChange;
-	private JLabel averageHeight;
 
 	private JPanel panel5;
 	private JButton reset;
@@ -59,7 +60,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 	private JTextField noContinentsF;
 	private JTextField noSuperContinentsF;
 	private JTextField seaChangeF;
-	private JTextField averageHeightF;
 
 	private boolean iceOnMap;
 	private boolean paused;
@@ -71,40 +71,40 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	private boolean stop;
 	private double seaBase;
-	
+
 	private JButton save;
 	private String file;
-	
+
 	private PlayerTask plt;
 
 	/**
-	 * Constructor. 
-	 * @param size - of Globe canvas.
+	 * Constructor.
+	 * 
+	 * @param size
+	 *            - of Globe canvas.
 	 */
 	public GlobeGUI(int size) {
-	
+
 		this.setTitle("Continental Drift Simulator");
 		stop = true;
 		g = new Globe(size);
 
 		iceOnMap = true;
-		
-		
-		
+
 		g.plotMaps();
 		this.size = size;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	
-		
+
 		layoutComponents();
 		paused = true;
-		
 
 		redraw();
 	}
 
 	/**
-	 * Offers a choice of 2, 3, or 4 continents for the user to start the model with.
+	 * Offers a choice of 2, 3, or 4 continents for the user to start the model
+	 * with.
+	 * 
 	 * @param number
 	 */
 	public void generate(int number) {
@@ -140,6 +140,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	/**
 	 * Gives continents a random speed and direction.
+	 * 
 	 * @return
 	 */
 	public int randomSpeed() {
@@ -165,10 +166,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	// makes a whole new frame and everything atm - java garbage should handle it
 	/**
-	 * Redraws the map with updated locations and heights. A new BufferedImage is created, leaving
-	 * Java machine to dispose of old one. 
-	 * It is in this method that intuitive colors are added to the map, depending on height of continent, and
-	 * whether continent is located in the poles.
+	 * Redraws the map with updated locations and heights. A new BufferedImage is
+	 * created, leaving Java machine to dispose of old one. It is in this method
+	 * that intuitive colors are added to the map, depending on height of continent,
+	 * and whether continent is located in the poles.
 	 */
 	public void redraw() {
 		img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
@@ -277,11 +278,10 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		noContinents = new JLabel("Continents:");
 		noSuperContinents = new JLabel("Super Continents:");
 		seaChange = new JLabel("Change in sea level (m):");
-		averageHeight = new JLabel("Average height of continents:");
+
 		noContinentsF = new JTextField(10);
 		noSuperContinentsF = new JTextField(10);
 		seaChangeF = new JTextField(10);
-		averageHeightF = new JTextField(10);
 
 		panel3.setLayout(new GridLayout(4, 2));
 
@@ -291,8 +291,6 @@ public class GlobeGUI extends JFrame implements ActionListener {
 		panel3.add(noSuperContinentsF);
 		panel3.add(seaChange);
 		panel3.add(seaChangeF);
-		panel3.add(averageHeight);
-		panel3.add(averageHeightF);
 
 		TitledBorder border3 = new TitledBorder("Model data");
 		border3.setTitleJustification(TitledBorder.CENTER);
@@ -338,7 +336,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// advance model by one 
+		// advance model by one
 		if (e.getSource() == advance) {
 			g.move();
 			redraw();
@@ -395,6 +393,7 @@ public class GlobeGUI extends JFrame implements ActionListener {
 
 	/**
 	 * A thread to auto play the model, repeating calls to move().
+	 * 
 	 * @author 2354535k
 	 *
 	 */
@@ -431,7 +430,8 @@ public class GlobeGUI extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Data feedback from Globe class, to give a flavour of some information that can be offered besides the visual map
+	 * Data feedback from Globe class, to give a flavour of some information that
+	 * can be offered besides the visual map
 	 */
 	public void getData() {
 
